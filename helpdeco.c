@@ -438,6 +438,19 @@ long hash(char *name) /* convert 3.1/'95 topic name to hash value */
     return hash;
 }
 
+static void strlwr(char *p) {
+	while(*p) *p = tolower(*(p++));
+}
+
+static int memicmp(const void*a, const void*b, size_t l) {
+	const unsigned char*x = a, *y = b;
+	if(!l) return 0;
+	while(--l) {
+		unsigned char o = tolower(*x), p = tolower(*y);
+		if(o != p) return o - p;
+	}
+}
+
 char *unhash(unsigned long hash) /* deliver 3.1 context id that fits hash value */
 {
     static char buffer[15];
@@ -902,6 +915,7 @@ void SysLoad(FILE *HelpFile) /* gets global values from SYSTEM file */
 /* compares filename a[.HLP] and filename b[.HLP], returning 0 if match */
 int filenamecmp(const char *a,const char *b)
 {
+#if 0
     char aname[_MAX_FNAME],bname[_MAX_FNAME];
     char aext[_MAX_EXT],bext[_MAX_EXT];
     int i;
@@ -913,6 +927,9 @@ int filenamecmp(const char *a,const char *b)
     i=strcmpi(aname,bname);
     if(i) return i;
     return strcmpi(aext,bext);
+#else
+	return strcmpi(a,b);
+#endif
 }
 
 /* store external reference in list, checked later */
@@ -3320,12 +3337,12 @@ unsigned long BackLinkLink(long TopicOffset,long OtherTopicOffset,long NextTopic
 /* create numbered rtf file names, no numbering if i=0 */
 void BuildName(char *buffer,int i)
 {
-    char num[7];
+    char num[32];
 
     strcpy(buffer,name);
     if(i)
     {
-	itoa(i,num,10);
+	sprintf(num,"%d",i);
 	if(strlen(buffer)+strlen(num)>8)
 	{
 	    buffer[8-strlen(num)]='\0';
@@ -4713,7 +4730,13 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
 		}
 		printf("%02x %d id=%04x ",*(unsigned char *)ptr,*(unsigned char *)(ptr+1)-0x80,*(unsigned short *)(ptr+2));
 		ptr+=4;
-		x2=*((unsigned short *)ptr)++;
+		{
+			unsigned short tmp;
+			memcpy(&tmp, ptr, 2); //FIXME endian
+			ptr += 2;
+			x2 = tmp;
+		}
+		//x2=*((unsigned short *)ptr)++;
 		if(x2&0x0001) printf("unknownbit01=%ld ",scanlong(&ptr)); /* found in MVBs, purpose unknown, may mean that x2 is compressed long */
 		if(x2&0x0002) printf("topspacing=%d ",scanint(&ptr));
 		if(x2&0x0004) printf("bottomspacing=%d ",scanint(&ptr));
@@ -4733,7 +4756,9 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
 		    if(x1&0x20) fputs("thickborder ",stdout);
 		    if(x1&0x40) fputs("doubleborder ",stdout);
 		    if(x1&0x80) fputs("unknownborder",stdout);
-		    printf("%04x ",*((unsigned short *)ptr)++);
+		    //printf("%04x ",*((unsigned short *)ptr)++);
+		    printf("%04x ",*((unsigned short *)ptr));
+		    ptr += 2;
 		}
 		if(x2&0x0200)
 		{
@@ -5885,8 +5910,10 @@ BOOL HelpDeCompile(FILE *HelpFile,char *dumpfile,int mode,char *exportname,long 
 int _cdecl main(int argc,char *argv[])
 {
     char AnnoFileName[81];
+#if 0
     char drive[_MAX_DRIVE];
     char dir[_MAX_DIR];
+#endif
     FILE *f;
     int mode;
     BOOL annotate;
@@ -6036,14 +6063,19 @@ int _cdecl main(int argc,char *argv[])
     }
     if(filename)
     {
+#if 0
 	strupr(filename);
 	_splitpath(filename,drive,dir,name,ext);
 	if(ext[0]=='\0') strcpy(ext,".HLP");
 	mvp=ext[1]=='M';
 	_makepath(HelpFileName,drive,dir,name,ext);
 	f=fopen(HelpFileName,"rb");
+#else
+        f=fopen(filename, "rb");
+#endif
 	if(f)
 	{
+#if 0
 	    if(annotate)
 	    {
 		if(AnnoFileName[0]=='\0') _makepath(AnnoFileName,drive,dir,name,".ANN");
@@ -6053,6 +6085,7 @@ int _cdecl main(int argc,char *argv[])
 		    fprintf(stderr,"Couldn't find annotation file '%s'\n",AnnoFileName);
 		}
 	    }
+#endif
 	    prefixhash[0]=0L;
 	    for(i=1;prefix[i];i++)
 	    {

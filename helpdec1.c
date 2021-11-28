@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
-#include <conio.h>
 #include <ctype.h>
 #include "helpdeco.h"
 
@@ -18,10 +17,11 @@ void error(char *format,...)
     va_start(arg,format);
     vfprintf(stderr,format,arg);
     va_end(arg);
-    fputs("\nPress CR to continue at your own risk, any other key to exit.\n",stderr);
-    if(getch()!='\r') exit(1);
+    fputs("\nPress ENTER to continue at your own risk, any other key to exit.\n",stderr);
+    if(getc(stdin)!='\n') exit(1);
 }
 
+#ifdef NEED_STRLCPY
 size_t strlcpy(char *dest,char *src,size_t len) /* limited string copy */
 {
     size_t i;
@@ -31,6 +31,7 @@ size_t strlcpy(char *dest,char *src,size_t len) /* limited string copy */
     dest[i]='\0';
     return i;
 }
+#endif
 
 void *my_malloc(long bytes) /* save malloc function */
 {
@@ -122,8 +123,8 @@ FILE *my_fopen(const char *filename,const char *mode) /* save fopen function */
 	    fprintf(stderr,"File %s already exists. Overwrite (Y/N/All/Quit) ? Y\b",filename);
 	    do
 	    {
-		ch=toupper(getch());
-		if(ch=='\r') ch='Y'; else if(ch=='\x1B') ch='N';
+		ch=toupper(getc(stdin));
+		if(ch=='\n') ch='Y'; else if(ch=='\x1B') ch='N';
 	    }
 	    while(ch!='Q'&&ch!='A'&&ch!='Y'&&ch!='N');
 	    printf("%c\n",ch);
@@ -595,20 +596,52 @@ void putrtf(FILE *rtf,char *str)
 /* scan-functions for reading compressed values from LinkData1 */
 short scanint(char **ptr) /* scan a compressed short */
 {
-    if(*(*ptr)&1) return (*(((unsigned short *)(*ptr))++)>>1)-0x4000;
-    return (*(((unsigned char *)(*ptr))++)>>1)-0x40;
+    if(*(*ptr)&1) {
+        unsigned short tmp;
+        // fixme: read as little endian
+        memcpy(&tmp, *ptr, 2);
+        (*ptr) += 2;
+        return (tmp>>1)-0x4000;
+        //return (*(((unsigned short *)(*ptr))++)>>1)-0x4000;
+    }
+    unsigned char tmp = **ptr;
+    ++(*ptr);
+    return (tmp>>1)-0x40;
+    //return (*(((unsigned char *)(*ptr))++)>>1)-0x40;
 }
 
 unsigned short scanword(char **ptr) /* scan a compressed unsiged short */
 {
-    if(*(*ptr)&1) return *(((unsigned short *)(*ptr))++)>>1;
-    return *(((unsigned char *)(*ptr))++)>>1;
+    if(*(*ptr)&1) {
+        unsigned short tmp;
+        // fixme: read as little endian
+        memcpy(&tmp, *ptr, 2);
+        (*ptr) += 2;
+        return (tmp>>1);
+    }
+    unsigned char tmp = **ptr;
+    ++(*ptr);
+    return (tmp>>1);
+
+//    if(*(*ptr)&1) return *(((unsigned short *)(*ptr))++)>>1;
+//    return *(((unsigned char *)(*ptr))++)>>1;
 }
 
-long scanlong(char **ptr)  /* scan a compressed long */
+LONG scanlong(char **ptr)  /* scan a compressed long */
 {
-    if(*(*ptr)&1) return (*(((unsigned long *)(*ptr))++)>>1)-0x40000000L;
-    return (*(((unsigned short *)(*ptr))++)>>1)-0x4000;
+    if(*(*ptr)&1) {
+        unsigned LONG tmp;
+        // fixme: read as little endian
+        memcpy(&tmp, *ptr, sizeof(LONG));
+        (*ptr) += sizeof(LONG);
+        return (tmp>>1)-0x40000000L;
+    }
+    unsigned short tmp;
+    memcpy(&tmp, *ptr, 2);
+    (*ptr) += 2;
+    return (tmp>>1)-0x4000;
+    //if(*(*ptr)&1) return (*(((unsigned long *)(*ptr))++)>>1)-0x40000000L;
+    //return (*(((unsigned short *)(*ptr))++)>>1)-0x4000;
 }
 
 /* locates internal file FileName or internal directory if FileName is NULL

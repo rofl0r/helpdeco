@@ -2,12 +2,10 @@
 #ifndef HELPDECO_H
 #define HELPDECO_H
 #include <time.h>
-#include <malloc.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <conio.h>
 #include <ctype.h>
 
 #ifdef __TURBOC__
@@ -18,6 +16,15 @@ typedef struct { char a,b,c; } align;
 #else
 #pragma pack(1)
 #endif
+
+#include <limits.h>
+#define stricmp(A,B) strcasecmp(A, B)
+#define strcmpi(A,B) strcasecmp(A, B)
+#define _cdecl
+#define _MAX_FNAME PATH_MAX
+/* this seems to be max length of filename extensions.
+   use a failsafe loooong length. */
+#define _MAX_EXT 256
 
 typedef enum {FALSE,TRUE} BOOL;
 
@@ -587,8 +594,14 @@ typedef struct mfile          /* a class would be more appropriate */
 }
 MFILE;
 
+#ifndef LONG
+#define LONG int
+#endif
+
 extern void error(char *format,...);
+#ifdef NEED_STRLCPY
 extern size_t strlcpy(char *dest,char *src,size_t len); /* limited string copy */
+#endif
 extern void *my_malloc(long bytes); /* save malloc function */
 extern void *my_realloc(void *ptr,long bytes); /* save realloc function */
 extern char *my_strdup(char *ptr); /* save strdup function */
@@ -632,7 +645,7 @@ extern BOOL GetBit(FILE *f);
 extern void putrtf(FILE *rtf,char *str);
 extern short scanint(char **ptr); /* scan a compressed short */
 extern unsigned short scanword(char **ptr); /* scan a compressed unsiged short */
-extern long scanlong(char **ptr);  /* scan a compressed long */
+extern LONG scanlong(char **ptr);  /* scan a compressed long */
 extern BOOL SearchFile(FILE *HelpFile,char *FileName,long *FileLength);
 extern short GetFirstPage(FILE *HelpFile,BUFFER *buf,long *TotalEntries);
 extern short GetNextPage(FILE *HelpFile,BUFFER *buf); /* walk Btree */
