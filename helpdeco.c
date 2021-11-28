@@ -327,7 +327,7 @@ Parsing of macros changed (is it really better now ?)
 */
 
 FILEREF *external;
-char HelpFileName[81];
+char HelpFileName[_MAX_FNAME];
 char name[_MAX_FNAME];
 char ext[_MAX_EXT];
 FILE *AnnoFile;
@@ -5573,8 +5573,8 @@ void ContextList(FILE *HelpFile)
 
 BOOL HelpDeCompile(FILE *HelpFile,char *dumpfile,int mode,char *exportname,LONG offset)
 {
-    char filename[81];
-    char hpjfilename[81];
+    char filename[_MAX_FNAME];
+    char hpjfilename[_MAX_FNAME];
     LONG FileLength;
     FILE *rtf;
     FILE *hpj;
@@ -5906,7 +5906,7 @@ BOOL HelpDeCompile(FILE *HelpFile,char *dumpfile,int mode,char *exportname,LONG 
 
 int _cdecl main(int argc,char *argv[])
 {
-    char AnnoFileName[81];
+    char AnnoFileName[_MAX_FNAME];
 #if 0
     char drive[_MAX_DRIVE];
     char dir[_MAX_DIR];
@@ -6069,6 +6069,18 @@ int _cdecl main(int argc,char *argv[])
 	f=fopen(HelpFileName,"rb");
 #else
         f=fopen(filename, "rb");
+	{
+		char* pp = strrchr(filename, '.');
+		if(pp) {
+			*pp = 0;
+			char *qq = strrchr(filename, '/');
+			if(qq) ++qq;
+			else qq = filename;
+			strcpy(name, qq);
+			*pp = '.';
+			strcpy(ext, pp+1);
+		}
+	}
 #endif
 	if(f)
 	{
