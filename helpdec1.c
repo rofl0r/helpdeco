@@ -75,7 +75,7 @@ size_t my_fread(void *ptr,long bytes,FILE *f) /* save fread function */
     if(bytes==0) return 0;
     if(bytes<0||bytes!=(size_t)bytes||(result=fread(ptr,1,(size_t)bytes,f))!=bytes)
     {
-	error("my_fread(%ld) at %ld failed",bytes,ftell(f));
+	error("my_fread(%ld) at %ld failed",bytes,(long)ftell(f));
     }
     return result;
 }
@@ -153,12 +153,12 @@ unsigned short my_getw(FILE *f) /* get 16 bit quantity */
     return ch|(getc(f)<<8);
 }
 
-unsigned long getdw(FILE *f) /* get long */
+unsigned LONG getdw(FILE *f) /* get long */
 {
     unsigned short w;
 
     w=my_getw(f);
-    return ((unsigned long)my_getw(f)<<16)|(unsigned long)w;
+    return ((unsigned LONG)my_getw(f)<<16)|(unsigned LONG)w;
 }
 
 void my_putw(unsigned short w,FILE *f) /* write 16 bit quantity */
@@ -167,12 +167,12 @@ void my_putw(unsigned short w,FILE *f) /* write 16 bit quantity */
     putc((w>>8),f);
 }
 
-void putdw(unsigned long x,FILE *f) /* write long to file */
+void putdw(unsigned LONG x,FILE *f) /* write long to file */
 {
     fwrite(&x,4,1,f);
 }
 
-void putcdw(unsigned long x,FILE *f) /* write compressed long to file */
+void putcdw(unsigned LONG x,FILE *f) /* write compressed long to file */
 {
     if(x>32767L)
     {
@@ -315,21 +315,21 @@ unsigned short GetCWord(MFILE *f) /* get compressed word from memory mapped file
     return ((unsigned short)b>>1);
 }
 
-unsigned long GetCDWord(MFILE *f) /* get compressed long from memory mapped file or regular file */
+unsigned LONG GetCDWord(MFILE *f) /* get compressed long from memory mapped file or regular file */
 {
     unsigned short w;
 
     w=GetWord(f);
-    if(w&1) return (((unsigned long)GetWord(f)<<16)|(unsigned long)w)>>1;
-    return ((unsigned long)w>>1);
+    if(w&1) return (((unsigned LONG)GetWord(f)<<16)|(unsigned LONG)w)>>1;
+    return ((unsigned LONG)w>>1);
 }
 
-unsigned long GetDWord(MFILE *f) /* get long from memory mapped file or regular file */
+unsigned LONG GetDWord(MFILE *f) /* get long from memory mapped file or regular file */
 {
     unsigned short w;
 
     w=GetWord(f);
-    return ((unsigned long)GetWord(f)<<16)|(unsigned long)w;
+    return ((unsigned LONG)GetWord(f)<<16)|(unsigned LONG)w;
 }
 
 size_t StringRead(char *ptr,size_t size,MFILE *f) /* read nul terminated string from memory mapped or regular file */
@@ -554,8 +554,8 @@ char *PrintString(char *str,unsigned int len)
 /* important to read longs to stop at right position */
 BOOL GetBit(FILE *f)
 {
-    static unsigned long mask;
-    static unsigned long value;
+    static unsigned LONG mask;
+    static unsigned LONG value;
 
     if(f)
     {
@@ -648,7 +648,7 @@ LONG scanlong(char **ptr)  /* scan a compressed long */
 // reads FILEHEADER and returns TRUE with current position in HelpFile set
 // to first byte of data of FileName or returns FALSE if not found. Stores
 // UsedSpace (that's the file size) in FileLength if FileLength isn't NULL */
-BOOL SearchFile(FILE *HelpFile,char *FileName,long *FileLength)
+BOOL SearchFile(FILE *HelpFile,char *FileName,LONG *FileLength)
 {
     HELPHEADER Header;
     FILEHEADER FileHdr;
@@ -704,7 +704,7 @@ BOOL SearchFile(FILE *HelpFile,char *FileName,long *FileLength)
 // Number of TotalBtreeEntries stored in TotalEntries if pointer is
 // not NULL, NumberOfEntries of first B+ tree page returned.
 // buf stores position, so GetNextPage will seek to position itself. */
-short GetFirstPage(FILE *HelpFile,BUFFER *buf,long *TotalEntries)
+short GetFirstPage(FILE *HelpFile,BUFFER *buf,LONG *TotalEntries)
 {
     int CurrLevel;
     BTREEHEADER BTreeHdr;
@@ -715,11 +715,11 @@ short GetFirstPage(FILE *HelpFile,BUFFER *buf,long *TotalEntries)
     if(!BTreeHdr.TotalBtreeEntries) return 0;
     buf->FirstLeaf=ftell(HelpFile);
     buf->PageSize=BTreeHdr.PageSize;
-    fseek(HelpFile,buf->FirstLeaf+BTreeHdr.RootPage*(long)BTreeHdr.PageSize,SEEK_SET);
+    fseek(HelpFile,buf->FirstLeaf+BTreeHdr.RootPage*(LONG)BTreeHdr.PageSize,SEEK_SET);
     for(CurrLevel=1;CurrLevel<BTreeHdr.NLevels;CurrLevel++)
     {
 	my_fread(&CurrNode,sizeof(BTREEINDEXHEADER),HelpFile);
-	fseek(HelpFile,buf->FirstLeaf+CurrNode.PreviousPage*(long)BTreeHdr.PageSize,SEEK_SET);
+	fseek(HelpFile,buf->FirstLeaf+CurrNode.PreviousPage*(LONG)BTreeHdr.PageSize,SEEK_SET);
     }
     my_fread(&CurrNode,sizeof(CurrNode),HelpFile);
     buf->NextPage=CurrNode.NextPage;
@@ -731,7 +731,7 @@ short GetNextPage(FILE *HelpFile,BUFFER *buf) /* walk Btree */
     BTREENODEHEADER CurrNode;
 
     if(buf->NextPage==-1) return 0;
-    fseek(HelpFile,buf->FirstLeaf+buf->NextPage*(long)buf->PageSize,SEEK_SET);
+    fseek(HelpFile,buf->FirstLeaf+buf->NextPage*(LONG)buf->PageSize,SEEK_SET);
     my_fread(&CurrNode,sizeof(CurrNode),HelpFile);
     buf->NextPage=CurrNode.NextPage;
     return CurrNode.NEntries;
@@ -768,7 +768,7 @@ SYSTEMRECORD *GetFirstSystemRecord(FILE *HelpFile)
 {
     SYSTEMHEADER SysHdr;
     SYSTEMRECORD *SysRec;
-    long FileLength;
+    LONG FileLength;
 
     if(!SearchFile(HelpFile,"|SYSTEM",&FileLength)) return NULL;
     my_fread(&SysHdr,sizeof(SysHdr),HelpFile);
@@ -794,7 +794,7 @@ void ListFiles(FILE *HelpFile) /* display internal directory */
 	for(i=0;i<n;i++)
 	{
 	    my_gets(FileName,sizeof(FileName),HelpFile);
-	    printf("%-23s 0x%08lX",FileName,getdw(HelpFile));
+	    printf("%-23s 0x%08lX",FileName,(long)getdw(HelpFile));
 	    if(j++&1) putchar('\n'); else printf(" | ");
 	}
     }
@@ -806,11 +806,11 @@ void ListBaggage(FILE *HelpFile,FILE *hpj,BOOL before31) /* writes out [BAGGAGE]
     BOOL headerwritten;
     char *leader;
     char FileName[20];
-    long FileLength;
+    LONG FileLength;
     BUFFER buf;
     int i,n;
     FILE *f;
-    long savepos;
+    LONG savepos;
 
     headerwritten=FALSE;
     leader="|bm"+before31;
@@ -952,7 +952,7 @@ void ToMapDump(FILE *HelpFile,long FileLength)
 
     for(i=0;i*4L<FileLength;i++)
     {
-	printf("TopicNum: %-12ld TopicOffset: 0x%08lX\n",i,getdw(HelpFile));
+	printf("TopicNum: %-12ld TopicOffset: 0x%08lX\n",i,(long)getdw(HelpFile));
     }
 }
 
@@ -975,7 +975,7 @@ void GroupDump(FILE *HelpFile)
 	}
 	break;
     default:
-	fprintf(stderr,"GroupHeader GroupType %ld unknown\n",GroupHeader.GroupType);
+	fprintf(stderr,"GroupHeader GroupType %ld unknown\n",(long)GroupHeader.GroupType);
     }
 }
 
@@ -988,17 +988,17 @@ void KWMapDump(FILE *HelpFile)
     for(i=0;i<n;i++)
     {
 	my_fread(&KeywordMap,sizeof(KWMAPREC),HelpFile);
-	printf("Keyword: %-12ld LeafPage: %u\n",KeywordMap.FirstRec,KeywordMap.PageNum);
+	printf("Keyword: %-12ld LeafPage: %u\n",(long)KeywordMap.FirstRec,KeywordMap.PageNum);
     }
 }
 
 void KWDataDump(FILE *HelpFile,long FileLength)
 {
-    long i;
+    int i;
 
     for(i=0;i<FileLength;i+=4)
     {
-	printf("KWDataAddress: 0x%08lx TopicOffset: 0x%08lX\n",i,getdw(HelpFile));
+	printf("KWDataAddress: 0x%08x TopicOffset: 0x%08X\n",i,getdw(HelpFile));
     }
 }
 
@@ -1010,7 +1010,7 @@ void CatalogDump(FILE *HelpFile)
     my_fread(&catalog,sizeof(catalog),HelpFile);
     for(n=0;n<catalog.entries;n++)
     {
-	printf("Topic: %-12ld TopicOffset: 0x%08lx\n",n+1,getdw(HelpFile));
+	printf("Topic: %-12ld TopicOffset: 0x%08x\n",n+1,getdw(HelpFile));
     }
 }
 
@@ -1023,20 +1023,20 @@ void CTXOMAPDump(FILE *HelpFile)
     for(i=0;i<n;i++)
     {
 	my_fread(&CTXORec,sizeof(CTXORec),HelpFile);
-	printf("MapId: %-12ld TopicOffset: 0x%08lX\n",CTXORec.MapID,CTXORec.TopicOffset);
+	printf("MapId: %-12ld TopicOffset: 0x%08lX\n",(long)CTXORec.MapID,(long)CTXORec.TopicOffset);
     }
 }
 
 void LinkDump(FILE *HelpFile)
 {
-    long data[3];
+    LONG data[3];
     int n,i;
 
     n=my_getw(HelpFile);
     for(i=0;i<n;i++)
     {
 	my_fread(data,sizeof(data),HelpFile);
-	printf("Annotation for topic 0x%08lx 0x%08lx 0x%08lx\n",data[0],data[1],data[2]);
+	printf("Annotation for topic 0x%08lx 0x%08lx 0x%08lx\n",(long)data[0],(long)data[1],(long)data[2]);
     }
 }
 
@@ -1044,7 +1044,7 @@ void AnnotationDump(FILE *HelpFile,long FileLength,char *name)
 {
     long l;
 
-    printf("Annotation %s for topic 0x%08lx:\n",name,atol(name));
+    printf("Annotation %s for topic 0x%08lx:\n",name,(long)atol(name));
     for(l=0;l<FileLength;l++) putchar(getc(HelpFile));
     putchar('\n');
 }

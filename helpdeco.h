@@ -2,11 +2,16 @@
 #ifndef HELPDECO_H
 #define HELPDECO_H
 #include <time.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+
+#ifndef LONG
+#define LONG int
+#endif
 
 #ifdef __TURBOC__
 typedef struct { char a,b,c; } align;
@@ -30,17 +35,17 @@ typedef enum {FALSE,TRUE} BOOL;
 
 typedef struct               /* structure at beginning of help file */
 {
-    long Magic;              /* 0x00035F3F */
-    long DirectoryStart;     /* offset of FILEHEADER of internal direcory */
-    long FreeChainStart;     /* offset of FILEHEADER or -1L */
-    long EntireFileSize;     /* size of entire help file in bytes */
+    LONG Magic;              /* 0x00035F3F */
+    LONG DirectoryStart;     /* offset of FILEHEADER of internal direcory */
+    LONG FreeChainStart;     /* offset of FILEHEADER or -1L */
+    LONG EntireFileSize;     /* size of entire help file in bytes */
 }
 HELPHEADER;
 
 typedef struct FILEHEADER    /* structure at FileOffset of each internal file */
 {
-    long ReservedSpace;      /* reserved space in help file incl. FILEHEADER */
-    long UsedSpace;          /* used space in help file excl. FILEHEADER */
+    LONG ReservedSpace;      /* reserved space in help file incl. FILEHEADER */
+    LONG UsedSpace;          /* used space in help file excl. FILEHEADER */
     unsigned char FileFlags; /* normally 4 */
 }
 FILEHEADER;
@@ -57,7 +62,7 @@ typedef struct BTREEHEADER   /* structure after FILEHEADER of each Btree */
     short MustBeNegOne;      /* 0xFFFF */
     short TotalPages;        /* number of Btree pages */
     short NLevels;           /* number of levels of Btree */
-    long TotalBtreeEntries;  /* number of entries in Btree */
+    LONG TotalBtreeEntries;  /* number of entries in Btree */
 }
 BTREEHEADER;
 
@@ -80,19 +85,19 @@ BTREENODEHEADER;
 
 typedef struct SYSTEMHEADER  /* structure at beginning of |SYSTEM file */
 {
-    unsigned short Magic;    /* 0x036C */
-    unsigned short Minor;    /* help file format version number */
-    unsigned short Major;    /* 1 */
-    time_t GenDate;          /* date/time the help file was generated or 0 */
-    unsigned short Flags;    /* tells you how the help file is compressed */
+    uint16_t Magic;    /* 0x036C */
+    uint16_t Minor;    /* help file format version number */
+    uint16_t Major;    /* 1 */
+    uint32_t GenDate;          /* date/time the help file was generated or 0 */
+    uint16_t Flags;    /* tells you how the help file is compressed */
 }
 SYSTEMHEADER;
 
 typedef struct               /* internal structure */
 {
     FILE *File;
-    long SavePos;
-    long Remaining;
+    LONG SavePos;
+    LONG Remaining;
     unsigned short RecordType; /* type of data in record */
     unsigned short DataSize;   /* size of data */
     char Data[10];
@@ -169,12 +174,12 @@ KEYINDEX;
 
 typedef struct PHRINDEXHDR   /* structure of beginning of |PhrIndex file */
 {
-    long always4A01;              /* sometimes 0x0001 */
-    long entries;                 /* number of phrases */
-    long compressedsize;          /* size of PhrIndex file */
-    long phrimagesize;            /* size of decompressed PhrImage file */
-    long phrimagecompressedsize;  /* size of PhrImage file */
-    long always0;
+    LONG always4A01;              /* sometimes 0x0001 */
+    LONG entries;                 /* number of phrases */
+    LONG compressedsize;          /* size of PhrIndex file */
+    LONG phrimagesize;            /* size of decompressed PhrImage file */
+    LONG phrimagecompressedsize;  /* size of PhrImage file */
+    LONG always0;
     unsigned short bits:4;
     unsigned short unknown:12;
     unsigned short always4A00;    /* sometimes 0x4A01, 0x4A02 */
@@ -235,7 +240,7 @@ typedef struct NEWFONT        /* structure located at DescriptorsOffset */
     unsigned char unknown7;
     unsigned char unknown8;
     unsigned char unknown9;
-    long Height;
+    LONG Height;
     unsigned char mostlyzero[12];
     short Weight;
     unsigned char unknown10;
@@ -268,7 +273,7 @@ typedef struct MVBFONT        /* structure located at DescriptorsOffset */
     unsigned short style;
     unsigned char FGRGB[3];
     unsigned char BGRGB[3];
-    long Height;
+    LONG Height;
     unsigned char mostlyzero[12];
     short Weight;
     unsigned char unknown10;
@@ -327,14 +332,14 @@ CHARMAPHEADER;
 
 typedef struct KWMAPREC       /* structure of |xWMAP leaf-page entries */
 {
-    long FirstRec;            /* index number of first keyword on leaf page */
+    LONG FirstRec;            /* index number of first keyword on leaf page */
     unsigned short PageNum;   /* page number that keywords are associated with */
 }
 KWMAPREC;
 
-typedef long TOPICPOS;        /* TOPICPOS/DecompressSize = block number, TOPICPOS%DecompressSize = offset into decompression buffer (including sizeof(TOPICBLOCKHEADER)) */
+typedef LONG TOPICPOS;        /* TOPICPOS/DecompressSize = block number, TOPICPOS%DecompressSize = offset into decompression buffer (including sizeof(TOPICBLOCKHEADER)) */
 
-typedef long TOPICOFFSET;     /* TOPICOFFSET/0x8000 = block number, TOPICOFFSET/0x8000 = number of characters and hotspots counting from first TOPICLINK of this block */
+typedef LONG TOPICOFFSET;     /* TOPICOFFSET/0x8000 = block number, TOPICOFFSET/0x8000 = number of characters and hotspots counting from first TOPICLINK of this block */
 
 typedef struct                /* structure every TopicBlockSize in |TOPIC */
 {
@@ -346,8 +351,8 @@ TOPICBLOCKHEADER;
 
 typedef struct                /* structure pointed to by FirstTopicLink */
 {
-    long BlockSize;           /* size of this link + LinkData1 + LinkData2 */
-    long DataLen2;            /* length of decompressed LinkData2 */
+    LONG BlockSize;           /* size of this link + LinkData1 + LinkData2 */
+    LONG DataLen2;            /* length of decompressed LinkData2 */
     TOPICPOS PrevBlock;
     /* Windows 3.0 (HC30): number of bytes the TOPICLINK of the previous
     // block is located before this TOPICLINK, that is the block size of
@@ -357,7 +362,7 @@ typedef struct                /* structure pointed to by FirstTopicLink */
     /* Windows 3.0 (HC30): number of bytes the TOPICLINK of the next block
     // is located behind this block, including skipped TOPICBLOCKHEADER.
     // Windows 3.1 (HC31): TOPICPOS of next TOPICLINK */
-    long DataLen1;            /* includes size of TOPICLINK */
+    LONG DataLen1;            /* includes size of TOPICLINK */
     unsigned char RecordType; /* See below */
 }
 TOPICLINK;
@@ -369,10 +374,10 @@ TOPICLINK;
 
 typedef struct                /* structure of LinkData1 of RecordType 2 */
 {
-    long BlockSize;        /* size of topic, including internal topic links */
+    LONG BlockSize;        /* size of topic, including internal topic links */
     TOPICOFFSET BrowseBck; /* topic offset for prev topic in browse sequence */
     TOPICOFFSET BrowseFor; /* topic offset for next topic in browse sequence */
-    long TopicNum;         /* topic Number */
+    LONG TopicNum;         /* topic Number */
     TOPICPOS NonScroll;    /* start of non-scrolling region (topic offset) or -1 */
     TOPICPOS Scroll;       /* start of scrolling region (topic offset) */
     TOPICPOS NextTopic;    /* start of next type 2 record */
@@ -381,7 +386,7 @@ TOPICHEADER;
 
 typedef struct                /* structure of LinkData1 of RecordType 2 */
 {
-    long BlockSize;
+    LONG BlockSize;
     short PrevTopicNum;
     short unused1;
     short NextTopicNum;
@@ -391,30 +396,30 @@ TOPICHEADER30;
 
 typedef struct                /* structure of |CTXOMAP file entries */
 {
-    long MapID;
-    long TopicOffset;
+    LONG MapID;
+    LONG TopicOffset;
 }
 CTXOMAPREC;
 
 typedef struct                /* structure of |CONTEXT leaf-page entry */
 {
-    long HashValue;           /* Hash value of context id */
+    LONG HashValue;           /* Hash value of context id */
     TOPICOFFSET TopicOffset;  /* Topic offset */
 }
 CONTEXTREC;
 
 typedef struct                /* structure of *.GRP file header */
 {
-    unsigned long Magic;      /* 0x000A3333 */
-    unsigned long BitmapSize;
-    unsigned long LastTopic;
-    unsigned long FirstTopic;
-    unsigned long TopicsUsed;
-    unsigned long TopicCount;
-    unsigned long GroupType;
-    unsigned long Unknown1;
-    unsigned long Unknown2;
-    unsigned long Unknown3;
+    unsigned LONG Magic;      /* 0x000A3333 */
+    unsigned LONG BitmapSize;
+    unsigned LONG LastTopic;
+    unsigned LONG FirstTopic;
+    unsigned LONG TopicsUsed;
+    unsigned LONG TopicCount;
+    unsigned LONG GroupType;
+    unsigned LONG Unknown1;
+    unsigned LONG Unknown2;
+    unsigned LONG Unknown3;
 }
 GROUPHEADER;
 
@@ -428,7 +433,7 @@ GROUP;
 
 typedef struct                /* structure of STOPn.STP header */
 {
-    unsigned long Magic;      /* 0x00082222 */
+    unsigned LONG Magic;      /* 0x00082222 */
     unsigned short BytesUsed;
     unsigned short Unused[17];
 }
@@ -437,7 +442,7 @@ STOPHEADER;
 typedef struct                /* structure of |VIOLA leaf-page entry */
 {
     TOPICOFFSET TopicOffset;  /* topic offset */
-    long WindowNumber;        /* number of window assigned to topic */
+    LONG WindowNumber;        /* number of window assigned to topic */
 }
 VIOLAREC;
 
@@ -446,7 +451,7 @@ typedef struct                /* structure of |CATALOG header */
    unsigned short magic;      /* 0x1111 */
    unsigned short always8;
    unsigned short always4;
-   long entries;
+   LONG entries;
    unsigned char zero[30];
 }
 CATALOGHEADER;
@@ -454,26 +459,26 @@ CATALOGHEADER;
 typedef struct                /* structure of Windows Bitmap BMP file */
 {
     unsigned short bfType;
-    unsigned long bfSize;
+    unsigned LONG bfSize;
     unsigned short bfReserved1;
     unsigned short bfReserved2;
-    unsigned long bfOffBits;
+    unsigned LONG bfOffBits;
 }
 BITMAPFILEHEADER;
 
 typedef struct                /* structure of Windows Bitmap header */
 {
-    unsigned long biSize;
-    long biWidth;
-    long biHeight;
+    unsigned LONG biSize;
+    LONG biWidth;
+    LONG biHeight;
     unsigned short biPlanes;
     unsigned short biBitCount;
-    unsigned long biCompression;
-    unsigned long biSizeImage;
-    long biXPelsPerMeter;
-    long biYPelsPerMeter;
-    unsigned long biClrUsed;
-    unsigned long biClrImportant;
+    unsigned LONG biCompression;
+    unsigned LONG biSizeImage;
+    LONG biXPelsPerMeter;
+    LONG biYPelsPerMeter;
+    unsigned LONG biClrUsed;
+    unsigned LONG biClrImportant;
 }
 BITMAPINFOHEADER;
 
@@ -488,11 +493,11 @@ RECT;
 
 typedef struct                /* Windows Aldus placeable metafile header */
 {
-    unsigned long dwKey;
+    unsigned LONG dwKey;
     unsigned short hMF;
     RECT rcBBox;
     unsigned short wInch;
-    unsigned long dwReserved;
+    unsigned LONG dwReserved;
     unsigned short wChecksum;
 }
 APMFILEHEADER;
@@ -501,13 +506,13 @@ typedef struct                /* structure of hotspot info */
 {
     unsigned char id0,id1,id2;
     unsigned short x,y,w,h;
-    unsigned long hash;
+    unsigned LONG hash;
 }
 HOTSPOT;
 
 typedef struct                /* structure used as buf of GetFirstPage */
 {
-    long FirstLeaf;
+    LONG FirstLeaf;
     unsigned short PageSize;
     short NextPage;
 }
@@ -515,9 +520,9 @@ BUFFER;
 
 typedef struct                /* internal use. 16 bit: max. 3640 */
 {
-    long StartTopic;
-    long NextTopic;
-    long PrevTopic;
+    LONG StartTopic;
+    LONG NextTopic;
+    LONG PrevTopic;
     short BrowseNum;
     short Start;
     short Count;
@@ -526,7 +531,7 @@ BROWSE;
 
 typedef struct                /* internal use. 16 bit: max. 8191 */
 {
-    long StartTopic;
+    LONG StartTopic;
     short BrowseNum;
     short Start;
 }
@@ -535,7 +540,7 @@ START;
 typedef struct                /* internal use. 16 bit: max. 6553 */
 {
     char *name;
-    long hash;
+    LONG hash;
     BOOL derived;
 }
 HASHREC;
@@ -545,7 +550,7 @@ typedef struct                /* internal use to store keyword definitions */
     BOOL KeyIndex;
     char Footnote;
     char *Keyword;
-    long TopicOffset;
+    LONG TopicOffset;
 }
 KEYWORDREC;
 
@@ -560,7 +565,7 @@ typedef struct checkrec       /* internal use to store external references */
 {
     struct checkrec *next;
     enum { TOPIC, CONTEXT } type;
-    long hash;
+    LONG hash;
     char *id;
     PLACEREC *here;
 }
@@ -594,10 +599,6 @@ typedef struct mfile          /* a class would be more appropriate */
 }
 MFILE;
 
-#ifndef LONG
-#define LONG int
-#endif
-
 extern void error(char *format,...);
 #ifdef NEED_STRLCPY
 extern size_t strlcpy(char *dest,char *src,size_t len); /* limited string copy */
@@ -610,10 +611,10 @@ extern size_t my_gets(char *ptr,size_t size,FILE *f);  /* read nul terminated st
 extern void my_fclose(FILE *f); /* checks if disk is full */
 extern FILE *my_fopen(const char *filename,const char *mode); /* save fopen function */
 extern unsigned short my_getw(FILE *f); /* get 16 bit quantity */
-extern unsigned long getdw(FILE *f); /* get long */
+extern unsigned LONG getdw(FILE *f); /* get long */
 extern void my_putw(unsigned short w,FILE *f); /* write 16 bit quantity */
-extern void putdw(unsigned long x,FILE *f); /* write long to file */
-extern void putcdw(unsigned long x,FILE *f); /* write compressed long to file */
+extern void putdw(unsigned LONG x,FILE *f); /* write long to file */
+extern void putcdw(unsigned LONG x,FILE *f); /* write compressed long to file */
 extern void putcw(unsigned int x,FILE *f); /* write compressed word to file */
 extern int MemoryPut(MFILE *f,char c); /* put char to memory mapped file */
 extern int FilePut(MFILE *f,char c); /* put char to regular file */
@@ -630,8 +631,8 @@ extern MFILE *CreateVirtual(FILE *f);  /* assign a real file */
 extern void CloseMap(MFILE *f); /* close a MFILE */
 extern int GetWord(MFILE *f); /* read 16 bit value from memory mapped file or regular file */
 extern unsigned short GetCWord(MFILE *f); /* get compressed word from memory mapped file or regular file */
-extern unsigned long GetCDWord(MFILE *f); /* get compressed long from memory mapped file or regular file */
-extern unsigned long GetDWord(MFILE *f); /* get long from memory mapped file or regular file */
+extern unsigned LONG GetCDWord(MFILE *f); /* get compressed long from memory mapped file or regular file */
+extern unsigned LONG GetDWord(MFILE *f); /* get long from memory mapped file or regular file */
 extern size_t StringRead(char *ptr,size_t size,MFILE *f); /* read nul terminated string from memory mapped or regular file */
 extern long copy(FILE *f,long bytes,FILE *out);
 extern long CopyBytes(MFILE *f,long bytes,FILE *out);
@@ -646,8 +647,8 @@ extern void putrtf(FILE *rtf,char *str);
 extern short scanint(char **ptr); /* scan a compressed short */
 extern unsigned short scanword(char **ptr); /* scan a compressed unsiged short */
 extern LONG scanlong(char **ptr);  /* scan a compressed long */
-extern BOOL SearchFile(FILE *HelpFile,char *FileName,long *FileLength);
-extern short GetFirstPage(FILE *HelpFile,BUFFER *buf,long *TotalEntries);
+extern BOOL SearchFile(FILE *HelpFile,char *FileName,LONG *FileLength);
+extern short GetFirstPage(FILE *HelpFile,BUFFER *buf,LONG *TotalEntries);
 extern short GetNextPage(FILE *HelpFile,BUFFER *buf); /* walk Btree */
 extern SYSTEMRECORD *GetNextSystemRecord(SYSTEMRECORD *SysRec);
 extern SYSTEMRECORD *GetFirstSystemRecord(FILE *HelpFile);

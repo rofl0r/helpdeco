@@ -336,7 +336,7 @@ int hashrecs=0;
 BROWSE *browse;
 int browses;
 int browsenums;
-long scaling;
+LONG scaling;
 int rounderr;
 START *start;
 int starts;
@@ -345,7 +345,7 @@ BOOL before31,after31;
 BOOL win95;
 BOOL mvp,multi;
 BOOL warnings,missing;
-long *Topic;
+LONG *Topic;
 int Topics;			    /* 16 bit: max. 16348 Topics */
 GROUP *group;
 int groups;
@@ -357,7 +357,7 @@ BOOL overwrite=FALSE;
 BOOL exportLZ77=FALSE;
 BOOL extractmacros=TRUE;
 BOOL guessing=TRUE;
-long guessed=0L;
+LONG guessed=0L;
 BOOL listtopic=FALSE;
 BOOL nopagebreak=FALSE;
 BOOL resolvebrowse=TRUE;
@@ -374,7 +374,7 @@ char TopicTitle[256];
 char *Phrases;
 unsigned int *PhraseOffsets;
 unsigned int PhraseCount;
-long TopicFileLength;
+LONG TopicFileLength;
 int TopicBlockSize; /* 2k or 4k */
 int DecompressSize; /* 4k or 16k */
 char buffer[4096];
@@ -422,12 +422,12 @@ static signed char table[256]=
 char oldtable[256];
 unsigned char untable[]={0,'1','2','3','4','5','6','7','8','9','0',0,'.','_',0,0,0,'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
 char *prefix[]={"","idh_","helpid_",NULL,NULL,NULL,NULL,NULL};
-long prefixhash[sizeof(prefix)/sizeof(prefix[0])];
+LONG prefixhash[sizeof(prefix)/sizeof(prefix[0])];
 FONTDESCRIPTOR CurrentFont;
 
-long hash(char *name) /* convert 3.1/'95 topic name to hash value */
+LONG hash(char *name) /* convert 3.1/'95 topic name to hash value */
 {
-    long hash;
+    LONG hash;
     unsigned char *ptr;
 
     if(*name=='\0') return 1L;
@@ -451,11 +451,11 @@ static int memicmp(const void*a, const void*b, size_t l) {
 	}
 }
 
-char *unhash(unsigned long hash) /* deliver 3.1 context id that fits hash value */
+char *unhash(unsigned LONG hash) /* deliver 3.1 context id that fits hash value */
 {
     static char buffer[15];
     int i,j,k;
-    unsigned long hashlo,divlo,result,mask;
+    unsigned LONG hashlo,divlo,result,mask;
     unsigned char hashhi,divhi;
     char ch;
 
@@ -464,11 +464,11 @@ char *unhash(unsigned long hash) /* deliver 3.1 context id that fits hash value 
     while(i<j)
     {
 	k=(i+j)/2;
-	if(hashrec[k].hash<(long)hash)
+	if(hashrec[k].hash<(LONG)hash)
 	{
 	    i=k+1;
 	}
-	else if(hashrec[k].hash>(long)hash)
+	else if(hashrec[k].hash>(LONG)hash)
 	{
 	    j=k;
 	}
@@ -505,12 +505,12 @@ char *unhash(unsigned long hash) /* deliver 3.1 context id that fits hash value 
 	}
     }
     /* should never happen */
-    error("Can not find a matching string for hash value %08lx",hash);
-    sprintf(buffer,"HASH%08lx",hash);
+    error("Can not find a matching string for hash value %08lx",(long)hash);
+    sprintf(buffer,"HASH%08lx",(long)hash);
     return buffer;
 }
 
-char *ContextId(unsigned long hash) /* unhash and verify for legal entry point */
+char *ContextId(unsigned LONG hash) /* unhash and verify for legal entry point */
 {
     char *ptr;
     int i;
@@ -529,7 +529,7 @@ char *ContextId(unsigned long hash) /* unhash and verify for legal entry point *
 
 void AddTopic(char *TopicName,BOOL derived) /* adds a known topic name to hash decode list */
 {
-    long x;
+    LONG x;
     int i,j,k;
 
     x=hash(TopicName);
@@ -580,7 +580,7 @@ void AddTopic(char *TopicName,BOOL derived) /* adds a known topic name to hash d
 /* ContextRec is sorted by TopicOffset. Binary search for an entry for
 // TopicOffset topic. If more than one entry with identical TopicOffset
 // is stored, return index of the first one, if not found return -1 */
-int FindContext(long topic)
+int FindContext(LONG topic)
 {
     int i,lwb,upb;
 
@@ -638,10 +638,10 @@ int FindString(unsigned char *buf,int buflen,unsigned char *str,int len)
 // And if it doesn't derive a context id, don't bother, unhash delivers
 // one matching the hash code. This code is just to please the user.
 // Win95 allows for nearly every char to be used as a context ident. */
-BOOL Derive(unsigned char *str,unsigned long desiredhash,char *buffer)
+BOOL Derive(unsigned char *str,unsigned LONG desiredhash,char *buffer)
 {
     int i,j,k,l,m,n,o,p,s;
-    unsigned long hash,h,x,y;
+    unsigned LONG hash,h,x,y;
     char *ptr;
     unsigned char ch;
 
@@ -726,7 +726,7 @@ BOOL Derive(unsigned char *str,unsigned long desiredhash,char *buffer)
 void Guess(char *str,TOPICOFFSET topic)
 {
     int i,j,k,m;
-    long hash;
+    LONG hash;
 
     i=FindContext(topic);
     if(i!=-1) /* iff there is a # footnote assigned to that topic offset */
@@ -933,7 +933,7 @@ int filenamecmp(const char *a,const char *b)
 }
 
 /* store external reference in list, checked later */
-void StoreReference(char *filename,int type,char *id,long hash)
+void StoreReference(char *filename,int type,char *id,LONG hash)
 {
     CHECKREC *ptr;
     FILEREF *ref;
@@ -981,7 +981,7 @@ void CheckReferences(void)
     CHECKREC *ptr;
     FILE *f;
     BOOL found;
-    long offset;
+    LONG offset;
     int i,n;
     CTXOMAPREC CTXORec;
     BTREEHEADER BTreeHdr;
@@ -1027,7 +1027,7 @@ void CheckReferences(void)
 			    CurrNode.PreviousPage=BTreeHdr.RootPage;
 			    for(n=1;n<BTreeHdr.NLevels;n++)
 			    {
-				fseek(f,offset+CurrNode.PreviousPage*(long)BTreeHdr.PageSize,SEEK_SET);
+				fseek(f,offset+CurrNode.PreviousPage*(LONG)BTreeHdr.PageSize,SEEK_SET);
 				my_fread(&CurrNode,sizeof(BTREEINDEXHEADER),f);
 				for(i=0;i<CurrNode.NEntries;i++)
 				{
@@ -1036,7 +1036,7 @@ void CheckReferences(void)
 				    CurrNode.PreviousPage=my_getw(f); /* Page */
 				}
 			    }
-			    fseek(f,offset+CurrNode.PreviousPage*(long)BTreeHdr.PageSize,SEEK_SET);
+			    fseek(f,offset+CurrNode.PreviousPage*(LONG)BTreeHdr.PageSize,SEEK_SET);
 			    my_fread(&CurrNode,sizeof(BTREENODEHEADER),f);
 			    for(i=0;i<CurrNode.NEntries;i++)
 			    {
@@ -1054,7 +1054,7 @@ void CheckReferences(void)
 			}
 			else
 			{
-			    printf("0x%08lx@%s not found\n",ptr->hash,ref->filename);
+			    printf("0x%08lx@%s not found\n",(long)ptr->hash,ref->filename);
 			}
 			while(ptr->here)
 			{
@@ -1095,7 +1095,7 @@ void ListReferences(void)
 		}
 		else
 		{
-		    printf("0x%08lx='%s'",ptr->hash,unhash(ptr->hash));
+		    printf("0x%08lx='%s'",(long)ptr->hash,unhash(ptr->hash));
 		}
 		break;
 	    case CONTEXT:
@@ -1106,7 +1106,7 @@ void ListReferences(void)
 		}
 		else
 		{
-		    printf("0x%08lx=(%ld)",ptr->hash,ptr->hash);
+		    printf("0x%08lx=(%ld)",(long)ptr->hash,ptr->hash);
 		}
 		break;
 	    }
@@ -1336,13 +1336,13 @@ int ExtractBitmap(char *szFilename,MFILE *f)
     int type;
     unsigned int i,n,j;
     unsigned char byType,byPacked;
-    long l,pos,offset,nextpict,FileStart;
+    LONG l,pos,offset,nextpict,FileStart;
     BITMAPFILEHEADER bmfh;
     BITMAPINFOHEADER bmih;
     APMFILEHEADER afh;
     unsigned short *wp;
     unsigned short wMagic,mapmode,colors;
-    unsigned long dwRawSize,dwDataSize,dwHotspotOffset,dwOffsBitmap,dwHotspotSize,dwPictureOffset,xPels,yPels;
+    unsigned LONG dwRawSize,dwDataSize,dwHotspotOffset,dwOffsBitmap,dwHotspotSize,dwPictureOffset,xPels,yPels;
 
     FileStart=f->tell(f);
     wMagic=GetWord(f);
@@ -1409,7 +1409,7 @@ int ExtractBitmap(char *szFilename,MFILE *f)
 		    bmih.biSizeImage=(((bmih.biWidth*bmih.biBitCount+31)/32)*4)*bmih.biHeight;
 		    if(byType==5) /* convert DDB to DIB */
 		    {
-			long width,length;
+			LONG width,length;
 			unsigned char count,value;
 			int pad;
 
@@ -1559,7 +1559,7 @@ int ExtractBitmap(char *szFilename,MFILE *f)
 	    else
 	    {
 		unsigned int hotspots,n,j,l;
-		unsigned long MacroDataSize;
+		unsigned LONG MacroDataSize;
 		char *ptr;
 		HOTSPOT *hotspot;
 
@@ -1598,7 +1598,7 @@ int ExtractBitmap(char *szFilename,MFILE *f)
 		    case 0xE7: /* topic jump without font change */
 			if(hash(buffer+j)!=hotspot[n].hash)
 			{
-			    fprintf(stderr,"Wrong hash %08lx instead %08lx for '%s'\n",hotspot[n].hash,hash(buffer+j),buffer+j);
+			    fprintf(stderr,"Wrong hash %08lx instead %08lx for '%s'\n",(long)hotspot[n].hash,(long)hash(buffer+j),buffer+j);
 			}
 			AddTopic(buffer+j,FALSE);
 			break;
@@ -1626,7 +1626,7 @@ int ExtractBitmap(char *szFilename,MFILE *f)
 			    break;
 			}
 		    default:
-			error("Unknown hotspot %02x %02x %02x X=%u Y=%u W=%u H=%u %08lx,%s,%s",hotspot[n].id0,hotspot[n].id1,hotspot[n].id2,hotspot[n].x,hotspot[n].y,hotspot[n].w,hotspot[n].h,hotspot[n].hash,buffer,buffer+j);
+			error("Unknown hotspot %02x %02x %02x X=%u Y=%u W=%u H=%u %08lx,%s,%s",hotspot[n].id0,hotspot[n].id1,hotspot[n].id2,hotspot[n].x,hotspot[n].y,hotspot[n].w,hotspot[n].h,(long)hotspot[n].hash,buffer,buffer+j);
 		    }
 		}
 		free(hotspot);
@@ -1695,9 +1695,9 @@ void ExportBitmaps(FILE *HelpFile) /* export all bitmaps */
     MFILE *mf;
     char *leader;
     char FileName[20];
-    long FileLength;
+    LONG FileLength;
     int i,num,n,type;
-    long savepos;
+    LONG savepos;
 
     leader="|bm"+before31;
     SearchFile(HelpFile,NULL,NULL);
@@ -1732,7 +1732,7 @@ void ExportBitmaps(FILE *HelpFile) /* export all bitmaps */
     }
 }
 
-char *TopicName(long topic)
+char *TopicName(LONG topic)
 {
     static char name[20];
     int i;
@@ -1759,11 +1759,11 @@ char *TopicName(long topic)
 	    return unhash(ContextRec[i].HashValue);
 	}
     }
-    if(topic) fprintf(stderr,"Can not find topic offset %08lx\n",topic);
+    if(topic) fprintf(stderr,"Can not find topic offset %08lx\n",(long)topic);
     return NULL;
 }
 
-char *GetWindowName(long n) /* secondary window name from window number */
+char *GetWindowName(LONG n) /* secondary window name from window number */
 {
     if(windowname==NULL||n<0||n>=windownames||windowname[n]==NULL) return "main";
     return windowname[n];
@@ -1772,13 +1772,13 @@ char *GetWindowName(long n) /* secondary window name from window number */
 /* create HPJ file from contents of |SYSTEM internal file */
 void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 {
-    long FileLength;
+    LONG FileLength;
     SYSTEMHEADER SysHdr;
     SYSTEMRECORD *SysRec;
     STOPHEADER StopHdr;
     char name[51];
     char *ptr;
-    long color;
+    int color;
     FILE *f;
     int fbreak,macro,windows,i,keywords,dllmaps,n;
 
@@ -1851,7 +1851,7 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 		    if(SysRec->Data[0]) fprintf(hpj,"COPYRIGHT=%s\n",SysRec->Data);
 		    break;
 		case 0x0003:
-		    ptr=TopicName(*(long *)SysRec->Data);
+		    ptr=TopicName(*(LONG *)SysRec->Data);
 		    if(ptr) fprintf(hpj,"CONTENTS=%s\n",ptr);
 		    break;
 		case 0x0004:
@@ -1964,7 +1964,7 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 		{
 		    if(SysRec->RecordType==0x0004)
 		    {
-			if(sscanf(SysRec->Data,"SPC(%ld)%n",&color,&n)>0)
+			if(sscanf(SysRec->Data,"SPC(%d)%n",&color,&n)>0)
 			{
 			    fprintf(hpj,"SPC(%u,%u,%u)%s\n",(unsigned char)(color),(unsigned char)(color>>8),(unsigned char)(color>>16),SysRec->Data+n);
 			}
@@ -2074,12 +2074,10 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 			i++;
 		    }
 		}
-		if(multi) for(i=1;i<browsenums;i++) fprintf(hpj,"group=BROWSE%04x\n",i);
+		if(multi) for(i=1;i<browsenums;i++) fprintf(hpj,"group=BROWSE%04x\n",(int)i);
 		if(SearchFile(HelpFile,"|GMACROS",&FileLength))
 		{
-		    long len;
-		    long pos;
-		    long off;
+		    LONG len, pos, off;
 
 		    getdw(HelpFile); /* possible count or group number */
 		    for(pos=4L;pos<FileLength;pos+=len)
@@ -2141,7 +2139,7 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 	    }
 	    for(i=0;i<windows;i++)
 	    {
-		sprintf(name,"|CF%d",i);
+		sprintf(name,"|CF%d",(int)i);
 		if(SearchFile(HelpFile,name,&FileLength))
 		{
 		    fprintf(hpj,"[CONFIG:%d]\n",i);
@@ -2162,13 +2160,12 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 // PhrImage files of HCRTF */
 BOOL PhraseLoad(FILE *HelpFile)
 {
-    long FileLength;
+    LONG FileLength;
     char junk[30];
     BOOL newphrases;
     PHRINDEXHDR PhrIndexHdr;
     unsigned int n;
-    long l,offset;
-    long SavePos;
+    LONG l,offset,SavePos;
 
     if(SearchFile(HelpFile,"|PhrIndex",NULL))
     {
@@ -2178,7 +2175,7 @@ BOOL PhraseLoad(FILE *HelpFile)
 	{
 	    if(FileLength!=PhrIndexHdr.phrimagecompressedsize)
 	    {
-		fprintf(stderr,"PhrImage FileSize %ld, in PhrIndex.FileHdr %ld\n",PhrIndexHdr.phrimagecompressedsize,FileLength);
+		fprintf(stderr,"PhrImage FileSize %ld, in PhrIndex.FileHdr %ld\n",(long)PhrIndexHdr.phrimagecompressedsize,(long)FileLength);
 	    }
 	    PhraseCount=(unsigned int)PhrIndexHdr.entries;
 	    PhraseOffsets=my_malloc(sizeof(unsigned int)*(PhraseCount+1));
@@ -2344,7 +2341,7 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
     char CharMap[33];
     char *ptr;
     char *p;
-    long FontStart;
+    LONG FontStart;
     int i,j,k,l,len;
     unsigned char *family;
     BOOL charmap;
@@ -2689,15 +2686,15 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 /* read NumBytes from |TOPIC starting at TopicPos (or if TopicPos is 0
 // where last left off) into dest, returning number of bytes read.
 // TopicRead handles LZ77 decompression and the crossing of topic blocks */
-long TopicRead(FILE *HelpFile,long TopicPos,void *dest,long NumBytes)
+LONG TopicRead(FILE *HelpFile,LONG TopicPos,void *dest,LONG NumBytes)
 {
     static TOPICBLOCKHEADER TopicBlockHeader;
     static unsigned char TopicBuffer[0x4000];
-    static long TopicFileStart;
-    static long TopicBlockNum;
+    static LONG TopicFileStart;
+    static LONG TopicBlockNum;
     unsigned int TopicBlockOffset;
     static unsigned int DecompSize;
-    static long LastTopicPos;
+    static LONG LastTopicPos;
     unsigned int n;
 
     if(!TopicFileStart) /* first call: HelpFile is at start of |TOPIC */
@@ -2740,7 +2737,7 @@ long TopicRead(FILE *HelpFile,long TopicPos,void *dest,long NumBytes)
 }
 
 /* Hall or oldstyle Phrase replacement of str into out */
-char *PhraseReplace(unsigned char *str,long len,char *out)
+char *PhraseReplace(unsigned char *str,LONG len,char *out)
 {
     int CurChar;
 
@@ -2813,10 +2810,10 @@ char *PhraseReplace(unsigned char *str,long len,char *out)
 // if Length > NumBytes, suitable to read LinkData2. If phrase decompression
 // doesn't expands to Length bytes, buffer is padded using 0. TopicPhraseRead
 // always NUL-terminates at dest[Length] just to be save */
-long TopicPhraseRead(FILE *HelpFile,long TopicPos,char *dest,long NumBytes,long Length)
+LONG TopicPhraseRead(FILE *HelpFile,LONG TopicPos,char *dest,LONG NumBytes,LONG Length)
 {
     char *buffer;
-    long BytesRead;
+    LONG BytesRead;
 
     if(Length<=NumBytes) /* no phrase compression in this case */
     {
@@ -2836,7 +2833,7 @@ long TopicPhraseRead(FILE *HelpFile,long TopicPos,char *dest,long NumBytes,long 
 	free(buffer);
 	if(NumBytes>Length)
 	{
-	    error("Phrase replacement delivers %ld bytes instead of %ld",NumBytes,Length);
+	    error("Phrase replacement delivers %ld bytes instead of %ld",(long)NumBytes,(long)Length);
 	    exit(1);
 	}
     }
@@ -2844,14 +2841,13 @@ long TopicPhraseRead(FILE *HelpFile,long TopicPos,char *dest,long NumBytes,long 
     return BytesRead;
 }
 
-void Annotate(long pos,FILE *rtf)
+void Annotate(LONG pos,FILE *rtf)
 {
-    long FileLength;
+    LONG FileLength, l;
     char FileName[19];
     int i;
-    long l;
 
-    sprintf(FileName,"%ld!0",pos);
+    sprintf(FileName,"%ld!0",(long)pos);
     if(SearchFile(AnnoFile,FileName,&FileLength))
     {
 	fputs("{\\v {\\*\\atnid ANN}\\chatn {\\*\\annotation \\pard\\plain {\\chatn }",rtf);
@@ -2886,8 +2882,8 @@ void CollectKeywords(FILE *HelpFile)
 {
     unsigned short j,m;
     int i,n,k,l,map;
-    long FileLength,savepos,KWDataOffset,from;
-    long *keytopic;
+    LONG FileLength,savepos,KWDataOffset,from;
+    LONG *keytopic;
     BUFFER buf;
     char kwdata[10];
     char kwbtree[10];
@@ -2976,7 +2972,7 @@ void CollectKeywords(FILE *HelpFile)
 
 /* writes out all keywords appearing up to position TopicOffset and eats
 // them up so they are not written out again. Merges keywords if possible */
-void ListKeywords(FILE *HelpFile,FILE *rtf,long TopicOffset)
+void ListKeywords(FILE *HelpFile,FILE *rtf,LONG TopicOffset)
 {
     int len,footnote,keyindex;
 
@@ -3017,9 +3013,9 @@ void ListKeywords(FILE *HelpFile,FILE *rtf,long TopicOffset)
 /* create > footnote if topic at TopicOffset has a window assigned to
 // using the |VIOLA internal file. Read VIOLA sequentially, reloading
 // next page only if neccessary, because it is properly ordered. */
-int ListWindows(FILE *HelpFile,long TopicOffset)
+int ListWindows(FILE *HelpFile,LONG TopicOffset)
 {
-    long savepos;
+    LONG savepos;
     static int n,i;
     static BUFFER buf;
     static int VIOLAfound=-1;
@@ -3088,7 +3084,7 @@ int ListWindows(FILE *HelpFile,long TopicOffset)
 // sequence. Using the start records, TopicDump does know which browse
 // sequence starts at which topic and knows the browse sequence number
 // and subnumber assigned. */
-void AddStart(long StartTopic,int BrowseNum,int Count)
+void AddStart(LONG StartTopic,int BrowseNum,int Count)
 {
     start=my_realloc(start,(starts+1)*sizeof(START));
     start[starts].StartTopic=StartTopic;
@@ -3108,7 +3104,7 @@ void FixStart(int BrowseNum,int NewBrowseNum,int AddCount)
     }
 }
 
-void AddBrowse(long StartTopic,long NextTopic,long PrevTopic)
+void AddBrowse(LONG StartTopic,LONG NextTopic,LONG PrevTopic)
 {
     int i;
 
@@ -3125,7 +3121,7 @@ void AddBrowse(long StartTopic,long NextTopic,long PrevTopic)
     browse[i].Count=1;
 }
 
-void MergeBrowse(long TopicOffset,long OtherTopicOffset,long NextTopic,long PrevTopic)
+void MergeBrowse(LONG TopicOffset,LONG OtherTopicOffset,LONG NextTopic,LONG PrevTopic)
 {
     int i,j;
 
@@ -3155,11 +3151,11 @@ void MergeBrowse(long TopicOffset,long OtherTopicOffset,long NextTopic,long Prev
     else
     {
 	warnings=TRUE;
-	fprintf(stderr,"Can not merge %08lx %08lx %08lx\n",TopicOffset,NextTopic,PrevTopic);
+	fprintf(stderr,"Can not merge %08x %08x %08x\n",TopicOffset,NextTopic,PrevTopic);
     }
 }
 
-void LinkBrowse(long TopicOffset,long OtherTopicOffset,long NextTopic,long PrevTopic)
+void LinkBrowse(LONG TopicOffset,LONG OtherTopicOffset,LONG NextTopic,LONG PrevTopic)
 {
     int i;
 
@@ -3180,15 +3176,15 @@ void LinkBrowse(long TopicOffset,long OtherTopicOffset,long NextTopic,long PrevT
     else
     {
 	warnings=TRUE;
-	fprintf(stderr,"Can not link %08lx %08lx %08lx\n",TopicOffset,NextTopic,PrevTopic);
+	fprintf(stderr,"Can not link %08x %08x %08x\n",TopicOffset,NextTopic,PrevTopic);
 	for(i=0;i<browses;i++) if(browse[i].StartTopic!=-1L)
 	{
-	    fprintf(stderr,"Open browse %08lx %08lx\n",browse[i].PrevTopic,browse[i].NextTopic);
+	    fprintf(stderr,"Open browse %08x %08x\n",browse[i].PrevTopic,browse[i].NextTopic);
 	}
     }
 }
 
-void BackLinkBrowse(long TopicOffset,long OtherTopicOffset,long NextTopic,long PrevTopic)
+void BackLinkBrowse(LONG TopicOffset,LONG OtherTopicOffset,LONG NextTopic,LONG PrevTopic)
 {
     int i;
 
@@ -3211,14 +3207,14 @@ void BackLinkBrowse(long TopicOffset,long OtherTopicOffset,long NextTopic,long P
     else
     {
 	warnings=TRUE;
-	fprintf(stderr,"Can not backlink %08lx %08lx %08lx\n",TopicOffset,NextTopic,PrevTopic);
+	fprintf(stderr,"Can not backlink %08x %08x %08x\n",TopicOffset,NextTopic,PrevTopic);
     }
 }
 
-unsigned long AddLink(long StartTopic,long NextTopic,long PrevTopic)
+unsigned LONG AddLink(LONG StartTopic,LONG NextTopic,LONG PrevTopic)
 {
     int i,j;
-    unsigned long result;
+    unsigned LONG result;
 
     result=0L;
     for(i=0;i<browses;i++) if(browse[i].StartTopic==-1L) break;
@@ -3232,20 +3228,20 @@ unsigned long AddLink(long StartTopic,long NextTopic,long PrevTopic)
 	browse[i].Count=start[j].Start;
 	browse[i].NextTopic=NextTopic;
 	browse[i].PrevTopic=PrevTopic;
-	result=browse[i].BrowseNum+((long)browse[i].Start<<16);
+	result=browse[i].BrowseNum+((LONG)browse[i].Start<<16);
     }
     else
     {
 	warnings=TRUE;
-	fprintf(stderr,"Browse start %08lx not found\n",StartTopic);
+	fprintf(stderr,"Browse start %08x not found\n",StartTopic);
     }
     return result;
 }
 
-unsigned long MergeLink(long TopicOffset,long OtherTopicOffset,long NextTopic,long PrevTopic)
+unsigned LONG MergeLink(LONG TopicOffset,LONG OtherTopicOffset,LONG NextTopic,LONG PrevTopic)
 {
     int i,j;
-    unsigned long result;
+    unsigned LONG result;
 
     result=0L;
     for(i=0;i<browses;i++) if(browse[i].StartTopic!=-1L)
@@ -3265,7 +3261,7 @@ unsigned long MergeLink(long TopicOffset,long OtherTopicOffset,long NextTopic,lo
 	    warnings=TRUE;
 	    fprintf(stderr,"Prev browse end %d doen't match next browse start %d\n",browse[i].Count,browse[j].Start);
 	}
-	result=browse[i].BrowseNum+((long)browse[i].Count<<16);
+	result=browse[i].BrowseNum+((LONG)browse[i].Count<<16);
 	browse[i].NextTopic=browse[j].NextTopic;
 	browse[i].Count=browse[j].Count;
 	browse[j].StartTopic=-1L;
@@ -3273,15 +3269,15 @@ unsigned long MergeLink(long TopicOffset,long OtherTopicOffset,long NextTopic,lo
     else
     {
 	warnings=TRUE;
-	fprintf(stderr,"Can not merge %08lx %08lx %08lx\n",TopicOffset,NextTopic,PrevTopic);
+	fprintf(stderr,"Can not merge %08x %08x %08x\n",TopicOffset,NextTopic,PrevTopic);
     }
     return result;
 }
 
-unsigned long LinkLink(long TopicOffset,long OtherTopicOffset,long NextTopic,long PrevTopic)
+unsigned LONG LinkLink(LONG TopicOffset,LONG OtherTopicOffset,LONG NextTopic,LONG PrevTopic)
 {
     int i;
-    unsigned long result;
+    unsigned LONG result;
 
     result=0L;
     for(i=0;i<browses;i++) if(browse[i].StartTopic!=-1L)
@@ -3292,7 +3288,7 @@ unsigned long LinkLink(long TopicOffset,long OtherTopicOffset,long NextTopic,lon
     {
 	browse[i].NextTopic=NextTopic;
 	browse[i].Count++;
-	result=browse[i].BrowseNum+((long)browse[i].Count<<16);
+	result=browse[i].BrowseNum+((LONG)browse[i].Count<<16);
 	if(browse[i].NextTopic==-1L&&browse[i].PrevTopic==-1L)
 	{
 	    browse[i].StartTopic=-1L;
@@ -3301,15 +3297,15 @@ unsigned long LinkLink(long TopicOffset,long OtherTopicOffset,long NextTopic,lon
     else
     {
 	warnings=TRUE;
-	fprintf(stderr,"Can not link %08lx %08lx %08lx\n",TopicOffset,NextTopic,PrevTopic);
+	fprintf(stderr,"Can not link %08x %08x %08x\n",TopicOffset,NextTopic,PrevTopic);
     }
     return result;
 }
 
-unsigned long BackLinkLink(long TopicOffset,long OtherTopicOffset,long NextTopic,long PrevTopic)
+unsigned LONG BackLinkLink(LONG TopicOffset,LONG OtherTopicOffset,LONG NextTopic,LONG PrevTopic)
 {
     int i;
-    unsigned long result;
+    unsigned LONG result;
 
     result=0L;
     for(i=0;i<browses;i++) if(browse[i].StartTopic!=-1L)
@@ -3320,7 +3316,7 @@ unsigned long BackLinkLink(long TopicOffset,long OtherTopicOffset,long NextTopic
     {
 	browse[i].PrevTopic=PrevTopic;
 	browse[i].Start--;
-	result=browse[i].BrowseNum+((long)browse[i].Start<<16);
+	result=browse[i].BrowseNum+((LONG)browse[i].Start<<16);
 	if(browse[i].NextTopic==-1L&&browse[i].PrevTopic==-1L)
 	{
 	    browse[i].StartTopic=-1L;
@@ -3329,7 +3325,7 @@ unsigned long BackLinkLink(long TopicOffset,long OtherTopicOffset,long NextTopic
     else
     {
 	warnings=TRUE;
-	fprintf(stderr,"Can not backlink %08lx %08lx %08lx\n",TopicOffset,NextTopic,PrevTopic);
+	fprintf(stderr,"Can not backlink %08x %08x %08x\n",TopicOffset,NextTopic,PrevTopic);
     }
     return result;
 }
@@ -3357,7 +3353,7 @@ void BuildName(char *buffer,int i)
 void ChangeFont(FILE *rtf,unsigned int i,BOOL ul,BOOL uldb)
 {
     FONTDESCRIPTOR *f;
-    long pos;
+    LONG pos;
 
     if(i<fonts)
     {
@@ -3417,7 +3413,7 @@ void ChangeFont(FILE *rtf,unsigned int i,BOOL ul,BOOL uldb)
 
 /* list all groups the topic TopicNum is assigned to and/or emit footnote
 // for browse sequence of this topic as + footnote into rtf file */
-void ListGroups(FILE *rtf,long TopicNum,unsigned long BrowseNum)
+void ListGroups(FILE *rtf,LONG TopicNum,unsigned LONG BrowseNum)
 {
     int i;
     BOOL grouplisted;
@@ -3466,29 +3462,29 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 {
     TOPICLINK TopicLink;
     char *LinkData1;  /* Data associated with this link */
-    long nonscroll=-1L;
+    LONG nonscroll=-1L;
     char *LinkData2;  /* Second set of data */
     int fontset,i;
     int NextContextRec;
-    unsigned long BrowseNum;
+    unsigned LONG BrowseNum;
     char *hotspot;
     char *arg;
     BOOL firsttopic=TRUE;
     BOOL ul,uldb;
     int nextbitmap,TopicInRTF,NumberOfRTF;
-    long TopicNum,TopicOffset,TopicPos;
+    LONG TopicNum,TopicOffset,TopicPos;
     int col,cols,lastcol;
     short *iptr;
     unsigned short x1,x2,x3;
     short y1;
-    long l1;
+    LONG l1;
     char *ptr;
     char *cmd;
     char *str;
-    long ActualTopicOffset,MaxTopicOffset;
+    LONG ActualTopicOffset,MaxTopicOffset;
     TOPICHEADER30 *TopicHdr30;
     TOPICHEADER *TopicHdr;
-    long BogusTopicOffset;
+    LONG BogusTopicOffset;
 
     if(SearchFile(HelpFile,"|TOPIC",&TopicFileLength))
     {
@@ -3551,14 +3547,14 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 		     }
 		}
 		firsttopic=FALSE;
-		fprintf(stderr,"\rTopic %ld...",TopicNum-15);
+		fprintf(stderr,"\rTopic %d...",TopicNum-15);
 		if(!makertf)
 		{
 		    BrowseNum=0L;
 		    if(before31)
 		    {
 			TopicHdr30=(TOPICHEADER30 *)LinkData1;
-			fprintf(rtf,"{\\up #}{\\footnote\\pard\\plain{\\up #} TOPIC%ld}\n",TopicNum);
+			fprintf(rtf,"{\\up #}{\\footnote\\pard\\plain{\\up #} TOPIC%d}\n",TopicNum);
 			if(resolvebrowse)
 			{
 			    if(TopicHdr30->NextTopicNum>TopicNum&&TopicHdr30->PrevTopicNum>TopicNum
@@ -3686,17 +3682,17 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 		    if(cols>1)
 		    {
 			x1=iptr[0]+iptr[1]+iptr[3]/2;
-			fprintf(rtf,"\\trgaph%ld\\trleft%ld \\cellx%ld\\cellx%ld",((iptr[3]*scaling-rounderr)*l1)/32767,(((iptr[1]-iptr[3])*scaling-rounderr)*l1-32767)/32767,((x1*scaling-rounderr)*l1)/32767,(((x1+iptr[2]+iptr[3])*scaling-rounderr)*l1)/32767);
+			fprintf(rtf,"\\trgaph%d\\trleft%d \\cellx%d\\cellx%d",((iptr[3]*scaling-rounderr)*l1)/32767,(((iptr[1]-iptr[3])*scaling-rounderr)*l1-32767)/32767,((x1*scaling-rounderr)*l1)/32767,(((x1+iptr[2]+iptr[3])*scaling-rounderr)*l1)/32767);
 			x1+=iptr[2]+iptr[3];
 			for(col=2;col<cols;col++)
 			{
 			    x1+=iptr[2*col]+iptr[2*col+1];
-			    fprintf(rtf,"\\cellx%ld",((x1*scaling-rounderr)*l1)/32767);
+			    fprintf(rtf,"\\cellx%d",((x1*scaling-rounderr)*l1)/32767);
 			}
 		    }
 		    else
 		    {
-			fprintf(rtf,"\\trleft%ld \\cellx%ld ",((iptr[1]*scaling-rounderr)*l1-32767)/32767,((iptr[0]*scaling-rounderr)*l1)/32767);
+			fprintf(rtf,"\\trleft%d \\cellx%d ",((iptr[1]*scaling-rounderr)*l1-32767)/32767,((iptr[0]*scaling-rounderr)*l1)/32767);
 		    }
 		    ptr=(char *)(iptr+2*cols);
 		}
@@ -3719,12 +3715,12 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 		    if(x2&0x0400) fputs("\\qr",rtf);
 		    if(x2&0x0800) fputs("\\qc",rtf);
 		    if(x2&0x0001) scanlong(&ptr);
-		    if(x2&0x0002) fprintf(rtf,"\\sb%ld",scanint(&ptr)*scaling-rounderr);
-		    if(x2&0x0004) fprintf(rtf,"\\sa%ld",scanint(&ptr)*scaling-rounderr);
-		    if(x2&0x0008) fprintf(rtf,"\\sl%ld",scanint(&ptr)*scaling-rounderr);
-		    if(x2&0x0010) fprintf(rtf,"\\li%ld",scanint(&ptr)*scaling-rounderr);
-		    if(x2&0x0020) fprintf(rtf,"\\ri%ld",scanint(&ptr)*scaling-rounderr);
-		    if(x2&0x0040) fprintf(rtf,"\\fi%ld",scanint(&ptr)*scaling-rounderr);
+		    if(x2&0x0002) fprintf(rtf,"\\sb%d",scanint(&ptr)*scaling-rounderr);
+		    if(x2&0x0004) fprintf(rtf,"\\sa%d",scanint(&ptr)*scaling-rounderr);
+		    if(x2&0x0008) fprintf(rtf,"\\sl%d",scanint(&ptr)*scaling-rounderr);
+		    if(x2&0x0010) fprintf(rtf,"\\li%d",scanint(&ptr)*scaling-rounderr);
+		    if(x2&0x0020) fprintf(rtf,"\\ri%d",scanint(&ptr)*scaling-rounderr);
+		    if(x2&0x0040) fprintf(rtf,"\\fi%d",scanint(&ptr)*scaling-rounderr);
 		    if(x2&0x0100)
 		    {
 			x1=(unsigned char)*ptr++;
@@ -3809,9 +3805,9 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 			else switch((unsigned char)ptr[0])
 			{
 			case 0x20: /* vfld MVB */
-			    if(*(long *)(ptr+1))
+			    if(*(LONG *)(ptr+1))
 			    {
-				fprintf(rtf,"\\{vfld%ld\\}",*(long *)(ptr+1));
+				fprintf(rtf,"\\{vfld%ld\\}",(long)(*(LONG *)(ptr+1)));
 			    }
 			    else
 			    {
@@ -4014,7 +4010,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 			    if(!makertf)
 			    {
 				hotspot=my_realloc(hotspot,128);
-				sprintf(hotspot,"TOPIC%ld",*(long *)(ptr+1));
+				sprintf(hotspot,"TOPIC%ld",(long)(*(LONG *)(ptr+1)));
 			    }
 			    ptr+=5;
 			    break;
@@ -4026,7 +4022,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 			label1:
 			    if(!makertf)
 			    {
-				arg=ContextId(*(long *)(ptr+1));
+				arg=ContextId(*(LONG *)(ptr+1));
 				hotspot=my_realloc(hotspot,strlen(arg)+1);
 				sprintf(hotspot,"%s",arg);
 			    }
@@ -4040,7 +4036,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 			label2:
 			    if(!makertf)
 			    {
-				arg=ContextId(*(long *)(ptr+1));
+				arg=ContextId(*(LONG *)(ptr+1));
 				hotspot=my_realloc(hotspot,strlen(arg)+2);
 				sprintf(hotspot,"%%%s",arg);
 			    }
@@ -4064,7 +4060,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 				{
 				    cmd="";
 				}
-				arg=unhash(*(long *)(ptr+4)); // no ContextId, it may jump into external file
+				arg=unhash(*(LONG *)(ptr+4)); // no ContextId, it may jump into external file
 				switch((unsigned char)ptr[3])
 				{
 				case 0:
@@ -4128,7 +4124,7 @@ void ContextLoad(FILE *HelpFile)
 {
     BUFFER buf;
     int n;
-    long entries;
+    LONG entries;
 
     if(SearchFile(HelpFile,"|CONTEXT",NULL))
     {
@@ -4151,14 +4147,14 @@ void ContextLoad(FILE *HelpFile)
     {
 	Topic=my_malloc(entries);
 	my_fread(Topic,entries,HelpFile);
-	Topics=(int)(entries/sizeof(long));
+	Topics=(int)(entries/sizeof(LONG));
     }
 }
 
 void GenerateContent(FILE *HelpFile,FILE *ContentFile) /* create a simple Win95 contents file */
 {
     VIOLAREC *WindowRec;
-    long FileLength,offset;
+    LONG FileLength,offset;
     int n,i,j,WindowRecs;
     BUFFER buf;
     char *ptr;
@@ -4211,9 +4207,9 @@ void GenerateContent(FILE *HelpFile,FILE *ContentFile) /* create a simple Win95 
 
 void ListRose(FILE *HelpFile,FILE *hpj)
 {
-    long FileLength,offset,hash,h,pos,savepos;
+    LONG FileLength,offset,hash,h,pos,savepos;
     unsigned char *ptr;
-    long *keytopic;
+    LONG *keytopic;
     int n,i,l,e;
     unsigned short j,count;
     BUFFER buf,buf2;
@@ -4280,7 +4276,7 @@ void ListRose(FILE *HelpFile,FILE *hpj)
 // of the help file with known format of contents for debugging reasons */
 void PrintNewFont(int i,NEWFONT *newfont)
 {
-    printf("%3d: %-32.32s %6ld %-6s %02X%02X%02X %02X%02X%02X ",i,fontname[newfont->FontName],newfont->Height,FontFamily(newfont->PitchAndFamily>>4),newfont->FGRGB[2],newfont->FGRGB[1],newfont->FGRGB[0],newfont->BGRGB[2],newfont->BGRGB[1],newfont->BGRGB[0]);
+    printf("%3d: %-32.32s %6d %-6s %02X%02X%02X %02X%02X%02X ",i,fontname[newfont->FontName],newfont->Height,FontFamily(newfont->PitchAndFamily>>4),newfont->FGRGB[2],newfont->FGRGB[1],newfont->FGRGB[0],newfont->BGRGB[2],newfont->BGRGB[1],newfont->BGRGB[0]);
     if(newfont->Weight>500) putchar('b');
     if(newfont->Italic) putchar('i');
     if(newfont->Underline) putchar('u');
@@ -4292,7 +4288,7 @@ void PrintNewFont(int i,NEWFONT *newfont)
 
 void PrintMvbFont(int i,MVBFONT *mvbfont)
 {
-    printf("%3d: %-32.32s %6ld %-6s %02X%02X%02X %02X%02X%02X ",i,fontname[mvbfont->FontName],mvbfont->Height,FontFamily(mvbfont->PitchAndFamily>>4),mvbfont->FGRGB[2],mvbfont->FGRGB[1],mvbfont->FGRGB[0],mvbfont->BGRGB[2],mvbfont->BGRGB[1],mvbfont->BGRGB[0]);
+    printf("%3d: %-32.32s %6d %-6s %02X%02X%02X %02X%02X%02X ",i,fontname[mvbfont->FontName],mvbfont->Height,FontFamily(mvbfont->PitchAndFamily>>4),mvbfont->FGRGB[2],mvbfont->FGRGB[1],mvbfont->FGRGB[0],mvbfont->BGRGB[2],mvbfont->BGRGB[1],mvbfont->BGRGB[0]);
     if(mvbfont->Weight>500) putchar('b');
     if(mvbfont->Italic) putchar('i');
     if(mvbfont->Underline) putchar('u');
@@ -4305,7 +4301,7 @@ void PrintMvbFont(int i,MVBFONT *mvbfont)
 void FontDump(FILE *HelpFile)
 {
     FONTHEADER FontHdr;
-    long FileStart;
+    LONG FileStart;
     OLDFONT oldfont;
     NEWFONT newfont;
     NEWSTYLE newstyle;
@@ -4381,7 +4377,7 @@ void FontDump(FILE *HelpFile)
 
 void PhrImageDump(FILE *HelpFile)
 {
-    long FileLength;
+    LONG FileLength;
     unsigned int bytes;
     PHRINDEXHDR PhrIndexHdr;
     unsigned char *ptr;
@@ -4399,7 +4395,7 @@ void PhrImageDump(FILE *HelpFile)
 	    {
 		if(FileLength!=PhrIndexHdr.phrimagecompressedsize)
 		{
-		    fprintf(stderr,"PhrImage FileSize %ld, in PhrIndex.FileHdr %ld\n",PhrIndexHdr.phrimagecompressedsize,FileLength);
+		    fprintf(stderr,"PhrImage FileSize %ld, in PhrIndex.FileHdr %ld\n",(long)PhrIndexHdr.phrimagecompressedsize,(long)FileLength);
 		}
 		ptr=my_malloc(PhrIndexHdr.phrimagesize);
 		bytes=DecompressIntoBuffer(2,HelpFile,FileLength,ptr,PhrIndexHdr.phrimagesize);
@@ -4413,7 +4409,7 @@ void PhrImageDump(FILE *HelpFile)
 void BTreeDump(FILE *HelpFile,char text[])
 {
     int n,i,j;
-    long count;
+    LONG count;
     BUFFER buf;
     char format[10];
     char *ptr;
@@ -4435,8 +4431,8 @@ void BTreeDump(FILE *HelpFile,char text[])
 			count=getdw(HelpFile);
 			while(count>=8)
 			{
-			    printf(" (%ld)",getdw(HelpFile));
-			    printf("%08lx",getdw(HelpFile));
+			    printf(" (%d)",getdw(HelpFile));
+			    printf("%08x",getdw(HelpFile));
 			    count-=8;
 			}
 		    }
@@ -4452,7 +4448,7 @@ void BTreeDump(FILE *HelpFile,char text[])
 		    }
 		    else if(strchr(format,'l'))
 		    {
-			printf(format,getdw(HelpFile));
+			printf(format,(long)getdw(HelpFile));
 		    }
 		    else
 		    {
@@ -4518,7 +4514,8 @@ void SysDump(FILE *HelpFile)
     printf("System Flags & Compression Method=0x%04x\n",SysHdr.Flags);
     if(SysHdr.GenDate)
     {
-	TimeRec=localtime(&SysHdr.GenDate);
+	time_t gd = SysHdr.GenDate;
+	TimeRec=localtime(&gd);
 	printf("Help File Generated: %s",asctime(TimeRec));
     }
     if(SysHdr.Minor<16)
@@ -4537,7 +4534,7 @@ void SysDump(FILE *HelpFile)
 	    printf("COPYRIGHT=%s\n",SysRec->Data);
 	    break;
 	case 0x0003:
-	    printf("CONTENTS=0x%08lX\n",*(long *)SysRec->Data);
+	    printf("CONTENTS=0x%08lX\n",(long)(*(LONG *)SysRec->Data));
 	    break;
 	case 0x0004:
 	    printf("[MACRO] %s\n",SysRec->Data);
@@ -4617,7 +4614,7 @@ void SysDump(FILE *HelpFile)
 }
 
 /* dump the contents of |TOPIC for debugging */
-void DumpTopic(FILE *HelpFile,long TopicPos)
+void DumpTopic(FILE *HelpFile,LONG TopicPos)
 {
     TOPICLINK TopicLink;
     TOPICHEADER30 *TopicHdr30;
@@ -4625,15 +4622,15 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
     char *ptr;
     char *str;
     char *cmd;
-    long l;
+    LONG l;
     unsigned short x1,x2;
     unsigned char b;
     int cols,col;
     short i;
     char *LinkData1;
     char *LinkData2;
-    long TopicNum;
-    long TopicOffset;
+    LONG TopicNum;
+    LONG TopicOffset;
 
     if(!SearchFile(HelpFile,"|TOPIC",&TopicFileLength)) return;
     TopicOffset=0L;
@@ -4642,8 +4639,8 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
     while(TopicRead(HelpFile,TopicPos,&TopicLink,sizeof(TopicLink))==sizeof(TOPICLINK))
     {
 	puts("----------------------------------------------------------------------------");
-	printf("TopicLink Type %02x: BlockSize=%08lx DataLen1=%08lx DataLen2=%08lx\n",TopicLink.RecordType,TopicLink.BlockSize,TopicLink.DataLen1,TopicLink.DataLen2);
-	printf("TopicPos=%08lx TopicOffset=%08lx PrevBlock=%08lx NextBlock=%08lx\n",TopicPos,TopicOffset,TopicLink.PrevBlock,TopicLink.NextBlock);
+	printf("TopicLink Type %02x: BlockSize=%08lx DataLen1=%08lx DataLen2=%08lx\n",TopicLink.RecordType,(long)TopicLink.BlockSize,(long)TopicLink.DataLen1,(long)TopicLink.DataLen2);
+	printf("TopicPos=%08lx TopicOffset=%08lx PrevBlock=%08lx NextBlock=%08lx\n",(long)TopicPos,(long)TopicOffset,(long)TopicLink.PrevBlock,(long)TopicLink.NextBlock);
 	if(TopicLink.DataLen1>sizeof(TOPICLINK))
 	{
 	    LinkData1=my_malloc(TopicLink.DataLen1-sizeof(TOPICLINK));
@@ -4663,15 +4660,15 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
 	    {
 		TopicHdr30=(TOPICHEADER30 *)LinkData1;
 		puts("============================================================================");
-		printf("TopicHeader TopicNum=%ld BlockSize=%ld PrevTopicNum=%d NextTopicNum=%d\n",TopicNum,TopicHdr30->BlockSize,TopicHdr30->PrevTopicNum,TopicHdr30->NextTopicNum);
+		printf("TopicHeader TopicNum=%ld BlockSize=%ld PrevTopicNum=%d NextTopicNum=%d\n",(long)TopicNum,(long)TopicHdr30->BlockSize,TopicHdr30->PrevTopicNum,TopicHdr30->NextTopicNum);
 		TopicNum++;
 	    }
 	    else
 	    {
 		TopicHdr=(TOPICHEADER *)LinkData1;
 		puts("============================================================================");
-		printf("TopicHeader TopicNum=%ld BlockSize=%ld NextTopicOffset=%08lx\n",TopicHdr->TopicNum,TopicHdr->BlockSize,TopicHdr->NextTopic);
-		printf("NonScroll=%08lx Scroll=%08lx BrowseBck=%08lx BrowseFor=%08lx\n",TopicHdr->NonScroll,TopicHdr->Scroll,TopicHdr->BrowseBck,TopicHdr->BrowseFor);
+		printf("TopicHeader TopicNum=%ld BlockSize=%ld NextTopicOffset=%08lx\n",(long)TopicHdr->TopicNum,(long)TopicHdr->BlockSize,(long)TopicHdr->NextTopic);
+		printf("NonScroll=%08lx Scroll=%08lx BrowseBck=%08lx BrowseFor=%08lx\n",(long)TopicHdr->NonScroll,(long)TopicHdr->Scroll,(long)TopicHdr->BrowseBck,(long)TopicHdr->BrowseFor);
 	    }
 	}
 	else if(TopicLink.RecordType==TL_DISPLAY30||TopicLink.RecordType==TL_DISPLAY||TopicLink.RecordType==TL_TABLE)
@@ -4689,7 +4686,7 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
 		break;
 	    }
 	    ptr=LinkData1;
-	    printf("expandedsize=%ld ",scanlong(&ptr));
+	    printf("expandedsize=%ld ",(long)scanlong(&ptr));
 	    if(TopicLink.RecordType==TL_DISPLAY||TopicLink.RecordType==TL_TABLE)
 	    {
 		x1=scanword(&ptr);
@@ -4737,7 +4734,7 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
 			x2 = tmp;
 		}
 		//x2=*((unsigned short *)ptr)++;
-		if(x2&0x0001) printf("unknownbit01=%ld ",scanlong(&ptr)); /* found in MVBs, purpose unknown, may mean that x2 is compressed long */
+		if(x2&0x0001) printf("unknownbit01=%ld ",(long)scanlong(&ptr)); /* found in MVBs, purpose unknown, may mean that x2 is compressed long */
 		if(x2&0x0002) printf("topspacing=%d ",scanint(&ptr));
 		if(x2&0x0004) printf("bottomspacing=%d ",scanint(&ptr));
 		if(x2&0x0008) printf("linespacing=%d ",scanint(&ptr));
@@ -4804,7 +4801,7 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
 		    else switch((unsigned char)ptr[0])
 		    {
 		    case 0x20:
-			printf("{vfld%ld}",*(long *)(ptr+1));
+			printf("{vfld%ld}",(long)(*(LONG *)(ptr+1)));
 			ptr+=5;
 			break;
 		    case 0x21:
@@ -4895,27 +4892,27 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
 			ptr+=*(short *)(ptr+1)+3;
 			break;
 		    case 0xE0: /* Popup HC30 */
-			printf("[^TOPIC%ld]",*(long *)(ptr+1));
+			printf("[^TOPIC%ld]",(long)(*(LONG *)(ptr+1)));
 			ptr+=5;
 			break;
 		    case 0xE1: /* Jump HC30 */
-			printf("[TOPIC%ld]",*(long *)(ptr+1));
+			printf("[TOPIC%ld]",(long)(*(LONG *)(ptr+1)));
 			ptr+=5;
 			break;
 		    case 0xE2: /* Popup HC31 */
-			printf("[^%08lx]",*(long *)(ptr+1));
+			printf("[^%08lx]",(long)(*(LONG *)(ptr+1)));
 			ptr+=5;
 			break;
 		    case 0xE3: /* Jump HC31 */
-			printf("[%08lx]",*(long *)(ptr+1));
+			printf("[%08lx]",(long)(*(LONG *)(ptr+1)));
 			ptr+=5;
 			break;
 		    case 0xE6: /* Popup without font change */
-			printf("[*^%08lx]",*(long *)(ptr+1));
+			printf("[*^%08lx]",(long)(*(LONG *)(ptr+1)));
 			ptr+=5;
 			break;
 		    case 0xE7: /* Jump without font change */
-			printf("[*%08lx]",*(long *)(ptr+1));
+			printf("[*%08lx]",(long)(*(LONG *)(ptr+1)));
 			ptr+=5;
 			break;
 		    case 0xEA: /* Popup into external file / secondary window */
@@ -4933,16 +4930,16 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
 			switch(ptr[3])
 			{
 			case 0:
-			    printf("[%s%08lx] ",cmd,*(long *)(ptr+4));
+			    printf("[%s%08lx] ",cmd,(long)(*(LONG *)(ptr+4)));
 			    break;
 			case 1: /* Popup into secondary window (silly) */
-			    printf("[%s%08lx>%d]",cmd,*(long *)(ptr+4),(unsigned char)ptr[8]);
+			    printf("[%s%08lx>%d]",cmd,(long)(*(LONG *)(ptr+4)),(unsigned char)ptr[8]);
 			    break;
 			case 4:
-			    printf("[%s%08lx@%s] ",cmd,*(long *)(ptr+4),ptr+8);
+			    printf("[%s%08lx@%s] ",cmd,(long)(*(LONG *)(ptr+4)),ptr+8);
 			    break;
 			case 6: /* Popup into external file / secondary window (silly) */
-			    printf("[%s%08lx>%s@%s] ",cmd,*(long *)(ptr+4),ptr+8,strchr(ptr+8,'\0')+1);
+			    printf("[%s%08lx>%s@%s] ",cmd,(long)(*(LONG *)(ptr+4)),ptr+8,strchr(ptr+8,'\0')+1);
 			    break;
 			default:
 			    putchar('[');
@@ -5021,11 +5018,11 @@ void CTXOMAPList(FILE *HelpFile,FILE *hpj) /* write [MAP] section to HPJ file */
 		ptr=TopicName(CTXORec.TopicOffset);
 		if(ptr)
 		{
-		    fprintf(hpj,"%s %ld\n",ptr,CTXORec.MapID);
+		    fprintf(hpj,"%s %ld\n",ptr,(long)CTXORec.MapID);
 		}
 		else
 		{
-		    fprintf(hpj,"TOPIC%08lx %ld\n",CTXORec.TopicOffset,CTXORec.MapID);
+		    fprintf(hpj,"TOPIC%08lx %ld\n",(long)CTXORec.TopicOffset,(long)CTXORec.MapID);
 		}
 	    }
 	    putc('\n',hpj);
@@ -5035,11 +5032,11 @@ void CTXOMAPList(FILE *HelpFile,FILE *hpj) /* write [MAP] section to HPJ file */
 
 void GuessFromKeywords(FILE *HelpFile)
 {
-    long *keytopic;
+    LONG *keytopic;
     char kwdata[10];
     char kwbtree[10];
     int m,i,n,k,l,j,map;
-    long FileLength,KWDataOffset,TopicOffset;
+    LONG FileLength,KWDataOffset,TopicOffset;
     BUFFER buf;
 
     fputs("Guessing...",stderr);
@@ -5091,7 +5088,7 @@ void GuessFromKeywords(FILE *HelpFile)
     }
     if(guessed>0)
     {
-	fprintf(stderr,"%ld context ids found\n",guessed);
+	fprintf(stderr,"%ld context ids found\n",(long)guessed);
     }
     else
     {
@@ -5109,7 +5106,7 @@ void FirstPass(FILE *HelpFile)
     char *LinkData1;
     char *LinkData2;
     char *ptr;
-    long l1,TopicNum,TopicPos,TopicOffset,BogusTopicOffset;
+    LONG l1,TopicNum,TopicPos,TopicOffset,BogusTopicOffset;
     int n,i,col,cols;
     BUFFER buf;
     TOPICHEADER30 *TopicHdr30;
@@ -5173,7 +5170,7 @@ void FirstPass(FILE *HelpFile)
 	else LinkData2=NULL;
 	if(TopicLink.RecordType==TL_TOPICHDR) /* display a topic header record */
 	{
-	    fprintf(stderr,"\rTopic %ld...",TopicNum-15);
+	    fprintf(stderr,"\rTopic %ld...",(long)TopicNum-15);
 	    if(before31)
 	    {
 		TopicHdr30=(TOPICHEADER30 *)LinkData1;
@@ -5388,10 +5385,10 @@ void FirstPass(FILE *HelpFile)
 			case 1:
 			    break;
 			case 4:
-			    StoreReference(ptr+8,TOPIC,NULL,*(long *)(ptr+4));
+			    StoreReference(ptr+8,TOPIC,NULL,*(LONG *)(ptr+4));
 			    break;
 			case 6:
-			    StoreReference(strchr(ptr+8,'\0')+1,TOPIC,NULL,*(long *)(ptr+4));
+			    StoreReference(strchr(ptr+8,'\0')+1,TOPIC,NULL,*(LONG *)(ptr+4));
 			    break;
 			default:
 			    error("Unknown modifier %02x in tag %02x",(unsigned char)ptr[3],(unsigned char)ptr[0]);
@@ -5437,15 +5434,15 @@ void ContextList(FILE *HelpFile)
     char *LinkData1;
     char *LinkData2;
     char *ptr;
-    long TopicPos,TopicNum,TopicOffset;
+    LONG TopicPos,TopicNum,TopicOffset;
 
     if(SearchFile(HelpFile,"|CTXOMAP",NULL))
     {
 	maprecs=my_getw(HelpFile);
 	if(maprecs)
 	{
-	    map=my_malloc((long)maprecs*sizeof(CTXOMAPREC));
-	    my_fread(map,(long)maprecs*sizeof(CTXOMAPREC),HelpFile);
+	    map=my_malloc((LONG)maprecs*sizeof(CTXOMAPREC));
+	    my_fread(map,(LONG)maprecs*sizeof(CTXOMAPREC),HelpFile);
 	    qsort(map,maprecs,sizeof(CTXOMAPREC),CTXOMAPRecCmp);
 	}
     }
@@ -5484,7 +5481,7 @@ void ContextList(FILE *HelpFile)
 	    if(before31) TopicOffset=TopicPos;
 	    while(m<maprecs&&map[m].TopicOffset<TopicOffset)
 	    {
-		printf("  WinHelp(wnd,\"%s\",HELP_CONTEXT,%lu)\n",filename,map[m].MapID);
+		printf("  WinHelp(wnd,\"%s\",HELP_CONTEXT,%lu)\n",filename,(long)map[m].MapID);
 		m++;
 	    }
 	    if(!before31)
@@ -5535,12 +5532,12 @@ void ContextList(FILE *HelpFile)
 	    if(TopicLink.NextBlock<=0) break;
 	    if(LinkData2&&*LinkData2)
 	    {
-		printf("Topic %ld: %s",TopicNum,LinkData2);
+		printf("Topic %ld: %s",(long)TopicNum,LinkData2);
 		len=80;
 	    }
 	    else
 	    {
-		len=printf("Topic %ld: untitled: ",TopicNum);
+		len=printf("Topic %ld: untitled: ",(long)TopicNum);
 	    }
 	    TopicNum++;
 	}
@@ -5574,15 +5571,15 @@ void ContextList(FILE *HelpFile)
     }
 }
 
-BOOL HelpDeCompile(FILE *HelpFile,char *dumpfile,int mode,char *exportname,long offset)
+BOOL HelpDeCompile(FILE *HelpFile,char *dumpfile,int mode,char *exportname,LONG offset)
 {
     char filename[81];
     char hpjfilename[81];
-    long FileLength;
+    LONG FileLength;
     FILE *rtf;
     FILE *hpj;
     int d;
-    long topic;
+    int topic;
 
     if(!SearchFile(HelpFile,NULL,&FileLength)) return FALSE;
     if(!dumpfile)
@@ -5755,7 +5752,7 @@ BOOL HelpDeCompile(FILE *HelpFile,char *dumpfile,int mode,char *exportname,long 
 	    }
 	    dumpfile=filename;
 	}
-	printf("FileName: %s FileSize: %ld\n",dumpfile,FileLength);
+	printf("FileName: %s FileSize: %ld\n",dumpfile,(long)FileLength);
 	if(exportname) /* export internal file */
 	{
 	    FILE *f;
@@ -5785,7 +5782,7 @@ BOOL HelpDeCompile(FILE *HelpFile,char *dumpfile,int mode,char *exportname,long 
 	{
 	    LinkDump(HelpFile);
 	}
-	else if(sscanf(dumpfile,"%ld!%d",&topic,&d)==2&&topic!=0L&&d==0)
+	else if(sscanf(dumpfile,"%d!%d",&topic,&d)==2&&topic!=0L&&d==0)
 	{
 	    AnnotationDump(HelpFile,FileLength,dumpfile);
 	}
@@ -5920,7 +5917,7 @@ int _cdecl main(int argc,char *argv[])
     char *filename;
     char *dumpfile;
     char *exportname;
-    long offset;
+    LONG offset;
     int i,j;
 
     /* initialize hash value coding oldtable */
