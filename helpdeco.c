@@ -400,7 +400,7 @@ BOOL NotInAnyTopic;
 int TopicsPerRTF;
 BOOL lists['z'-'0'+1];
 BOOL keyindex['z'-'0'+1];
-static signed char table[256]=
+static const signed char table[256]=
 {
     '\x00', '\xD1', '\xD2', '\xD3', '\xD4', '\xD5', '\xD6', '\xD7', '\xD8', '\xD9', '\xDA', '\xDB', '\xDC', '\xDD', '\xDE', '\xDF',
     '\xE0', '\xE1', '\xE2', '\xE3', '\xE4', '\xE5', '\xE6', '\xE7', '\xE8', '\xE9', '\xEA', '\xEB', '\xEC', '\xED', '\xEE', '\xEF',
@@ -420,7 +420,7 @@ static signed char table[256]=
     '\xC0', '\xC1', '\xC2', '\xC3', '\xC4', '\xC5', '\xC6', '\xC7', '\xC8', '\xC9', '\xCA', '\xCB', '\xCC', '\xCD', '\xCE', '\xCF'
 };
 char oldtable[256];
-unsigned char untable[]={0,'1','2','3','4','5','6','7','8','9','0',0,'.','_',0,0,0,'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
+static const unsigned char untable[]={0,'1','2','3','4','5','6','7','8','9','0',0,'.','_',0,0,0,'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
 char *prefix[]={"","idh_","helpid_",NULL,NULL,NULL,NULL,NULL};
 LONG prefixhash[sizeof(prefix)/sizeof(prefix[0])];
 FONTDESCRIPTOR CurrentFont;
