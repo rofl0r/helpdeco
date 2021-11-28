@@ -5935,7 +5935,7 @@ int _cdecl main(int argc,char *argv[])
     /* scan arguments */
     for(i=1;i<argc;i++)
     {
-	if(argv[i][0]=='/'||argv[i][0]=='-')
+	if(argv[i][0]=='-')
 	{
 	    switch(tolower((unsigned char)argv[i][1]))
 	    {
@@ -6114,21 +6114,21 @@ int _cdecl main(int argc,char *argv[])
     }
     else
     {
-	fprintf(stderr,"HELPDECO - decompile *.HLP/*.MVB files of Windows 3.x / 95 - %d bit Version 2.1\n"
+	fprintf(stderr,"HELPDECO - decompile *.HLP/*.MVB files of Windows 3.x / 95 - 32 bit Version 2.1\n"
 		       "M.Winterhoff, Geschw.-Scholl-Ring 17, 38444 Wolfsburg, Germany, CIS 100326,2776\n"
 		       "\n"
-		       "usage:   HELPDECO helpfile[.hlp]    [/y]  - decompile helpfile into all sources\n"
-		       "         HELPDECO helpfile[.hlp]    [/y] /a[annfile.ANN]  - and add annotations\n"
-		       "         HELPDECO helpfile[.hlp] /r [/y] [/n]    - decompile into lookalike RTF\n"
-		       "         HELPDECO helpfile[.hlp] /c [/y]  - generate Win95 .CNT content file\n"
-		       "         HELPDECO helpfile[.hlp] /l       - list entry points of this helpfile\n"
-		       "         HELPDECO helpfile[.hlp] /e [/f]  - list references to other helpfiles\n"
-		       "         HELPDECO helpfile[.hlp] /p [/f]  - check references to other helpfiles\n"
-		       "         HELPDECO helpfile[.hlp] /d [/x]  - display internal directory\n"
-		       "         HELPDECO helpfile[.hlp] \"internalfile\" [/x]    - display internal file\n"
+		       "usage:   HELPDECO helpfile[.hlp]    [-y]  - decompile helpfile into all sources\n"
+		       "         HELPDECO helpfile[.hlp]    [-y] -a[annfile.ANN]  - and add annotations\n"
+		       "         HELPDECO helpfile[.hlp] -r [-y] [-n]    - decompile into lookalike RTF\n"
+		       "         HELPDECO helpfile[.hlp] -c [-y]  - generate Win95 .CNT content file\n"
+		       "         HELPDECO helpfile[.hlp] -l       - list entry points of this helpfile\n"
+		       "         HELPDECO helpfile[.hlp] -e [-f]  - list references to other helpfiles\n"
+		       "         HELPDECO helpfile[.hlp] -p [-f]  - check references to other helpfiles\n"
+		       "         HELPDECO helpfile[.hlp] -d [-x]  - display internal directory\n"
+		       "         HELPDECO helpfile[.hlp] \"internalfile\" [-x]    - display internal file\n"
 		       "         HELPDECO helpfile[.hlp] \"internalfile\" filename - export internal file\n"
-		       "options: /y overwrite without warning, /f list referencing topics, /x hex dump\n"
-		       "         /g no guessing, /hprefix add known contextid prefix, /n no page breaks\n"
+		       "options: -y overwrite without warning, -f list referencing topics, -x hex dump\n"
+		       "         -g no guessing, -hprefix add known contextid prefix, -n no page breaks\n"
 		       "To recreate all source files neccessary to rebuild a Windows helpfile, create\n"
 		       "a directory, change to this directory and call HELPDECO with the path and name\n"
 		       "of the helpfile to dissect. HELPDECO will extract all files contained in the\n"
@@ -6137,10 +6137,7 @@ int _cdecl main(int argc,char *argv[])
 		       "HCRTF, MVC, WMVC or MVCC. The file will not be identical, but should look and\n"
 		       "work like the original. This program is Freeware. Use at your own risk. No\n"
 		       "part of it may be used commercially. No fees may be charged on distributing.\n"
-#ifndef _WIN32
-		       "Launch from Windows 95/Windows NT command line to handle larger helpfiles."
-#endif
-		       ,sizeof(int)*8);
+		       );
     }
     return 0;
 }
