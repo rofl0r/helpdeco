@@ -828,10 +828,10 @@ void ListBaggage(FILE *HelpFile,FILE *hpj,BOOL before31) /* writes out [BAGGAGE]
 		{
 		    if(!headerwritten)
 		    {
-			fputs("[BAGGAGE]\n",hpj);
+			fputs("[BAGGAGE]\r\n",hpj);
 			headerwritten=TRUE;
 		    }
-		    fprintf(hpj,"%s\n",FileName);
+		    fprintf(hpj,"%s\r\n",FileName);
 		    f=my_fopen(FileName,"wb");
 		    if(f)
 		    {
@@ -975,7 +975,7 @@ void GroupDump(FILE *HelpFile)
 	}
 	break;
     default:
-	fprintf(stderr,"GroupHeader GroupType %ld unknown\n",(long)GroupHeader.GroupType);
+	fprintf(stderr,"GroupHeader GroupType %ld unknown\r\n",(long)GroupHeader.GroupType);
     }
 }
 

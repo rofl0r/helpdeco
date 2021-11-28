@@ -1680,12 +1680,12 @@ void ListBitmaps(FILE *hpj) /* writes out [BITMAPS] section */
 
     if(hpj&&extensions)
     {
-	fputs("[BITMAPS]\n",hpj);
+	fputs("[BITMAPS]\r\n",hpj);
 	for(i=0;i<extensions;i++) if(extension[i])
 	{
-	    fprintf(hpj,"bm%u.%s\n",i,bmpext[extension[i]&0x0F]);
+	    fprintf(hpj,"bm%u.%s\r\n",i,bmpext[extension[i]&0x0F]);
 	}
-	putc('\n',hpj);
+	fputs("\r\n",hpj);
     }
 }
 
@@ -1808,28 +1808,28 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 		strcpy(helpcomp,"HCRTF");
 	    }
 	}
-	fputs("[OPTIONS]\n",hpj);
+	fputs("[OPTIONS]\r\n",hpj);
 	if(before31) /* If 3.0 get title */
 	{
 	    my_gets(HelpFileTitle,33,HelpFile);
 	    if(HelpFileTitle[0]!='\0'&&HelpFileTitle[0]!='\n')
 	    {
-		fprintf(hpj,"TITLE=%s\n",HelpFileTitle);
+		fprintf(hpj,"TITLE=%s\r\n",HelpFileTitle);
 	    }
-	    fprintf(hpj,"INDEX=%s\n",TopicName(0L));
+	    fprintf(hpj,"INDEX=%s\r\n",TopicName(0L));
 	    if(PhraseCount)
 	    {
-		fputs("COMPRESS=TRUE\n",hpj);
+		fputs("COMPRESS=TRUE\r\n",hpj);
 	    }
 	    else
 	    {
-		fputs("COMPRESS=FALSE\n",hpj);
+		fputs("COMPRESS=FALSE\r\n",hpj);
 	    }
 	    for(i='A';i<='z';i++) if(lists[i-'0']&&i!='K')
 	    {
-		fprintf(hpj,"MULTIKEY=%c\n",i);
+		fprintf(hpj,"MULTIKEY=%c\r\n",i);
 	    }
-	    putc('\n',hpj);
+	    fputs("\r\n",hpj);
 	}
 	else  /* else get 3.1 System records */
 	{
@@ -1843,22 +1843,22 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 		switch(SysRec->RecordType)
 		{
 		case 0x0001:
-		    if(SysRec->Data[0]) fprintf(hpj,"TITLE=%s\n",SysRec->Data);
+		    if(SysRec->Data[0]) fprintf(hpj,"TITLE=%s\r\n",SysRec->Data);
 		    break;
 		case 0x0002:
 		    ptr=strchr(SysRec->Data,'\r');
 		    if(ptr) strcpy(ptr,"%date");
-		    if(SysRec->Data[0]) fprintf(hpj,"COPYRIGHT=%s\n",SysRec->Data);
+		    if(SysRec->Data[0]) fprintf(hpj,"COPYRIGHT=%s\r\n",SysRec->Data);
 		    break;
 		case 0x0003:
 		    ptr=TopicName(*(LONG *)SysRec->Data);
-		    if(ptr) fprintf(hpj,"CONTENTS=%s\n",ptr);
+		    if(ptr) fprintf(hpj,"CONTENTS=%s\r\n",ptr);
 		    break;
 		case 0x0004:
 		    macro=1;
 		    break;
 		case 0x0005:
-		    fprintf(hpj,"ICON=%s\n",IconFileName);
+		    fprintf(hpj,"ICON=%s\r\n",IconFileName);
 		    f=my_fopen(IconFileName,"wb");
 		    if(f)
 		    {
@@ -1870,16 +1870,16 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 		    windows++;
 		    break;
 		case 0x0008:
-		    if(SysRec->Data[0]) fprintf(hpj,"CITATION=%s\n",SysRec->Data);
+		    if(SysRec->Data[0]) fprintf(hpj,"CITATION=%s\r\n",SysRec->Data);
 		    break;
 		case 0x0009:
-		    if(!mvp) fprintf(hpj,"LCID=0x%X 0x%X 0x%X\n",*(short *)(SysRec->Data+8),*(short *)SysRec->Data,*(short *)(SysRec->Data+2));
+		    if(!mvp) fprintf(hpj,"LCID=0x%X 0x%X 0x%X\r\n",*(short *)(SysRec->Data+8),*(short *)SysRec->Data,*(short *)(SysRec->Data+2));
 		    break;
 		case 0x000A:
-		    if(!mvp&&SysRec->Data[0]) fprintf(hpj,"CNT=%s\n",SysRec->Data);
+		    if(!mvp&&SysRec->Data[0]) fprintf(hpj,"CNT=%s\r\n",SysRec->Data);
 		    break;
 		case 0x000B:
-//		    if(!mvp) fprintf(hpj,"CHARSET=%d\n",*(unsigned char *)(SysRec->Data+1));
+//		    if(!mvp) fprintf(hpj,"CHARSET=%d\r\n",*(unsigned char *)(SysRec->Data+1));
 		    break;
 		case 0x000C:
 		    if(mvp)
@@ -1888,7 +1888,7 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 		    }
 		    else
 		    {
-			fprintf(hpj,"DEFFONT=%s,%d,%d\n",SysRec->Data+2,*(unsigned char *)SysRec->Data,*(unsigned char *)(SysRec->Data+1));
+			fprintf(hpj,"DEFFONT=%s,%d,%d\r\n",SysRec->Data+2,*(unsigned char *)SysRec->Data,*(unsigned char *)(SysRec->Data+1));
 		    }
 		    break;
 		case 0x000D:
@@ -1901,12 +1901,12 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 		    }
 		    else
 		    {
-			fprintf(hpj,"INDEX_SEPARATORS=\"%s\"\n",SysRec->Data);
+			fprintf(hpj,"INDEX_SEPARATORS=\"%s\"\r\n",SysRec->Data);
 			strlcpy(index_separators,SysRec->Data,sizeof(index_separators));
 		    }
 		    break;
 		case 0x0012:
-		    if(SysRec->Data[0]) fprintf(hpj,"LANGUAGE=%s\n",SysRec->Data);
+		    if(SysRec->Data[0]) fprintf(hpj,"LANGUAGE=%s\r\n",SysRec->Data);
 		    break;
 		case 0x0013:
 		    dllmaps=1;
@@ -1918,29 +1918,29 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 		i=0;
 		if(lzcompressed) i|=8;
 		if(Hall) i|=4; else if(PhraseCount) i|=2;
-		fprintf(hpj,"COMPRESS=%d\n",i);
+		fprintf(hpj,"COMPRESS=%d\r\n",i);
 	    }
 	    else if(!lzcompressed)
 	    {
-		fputs("COMPRESS=OFF\n",hpj);
+		fputs("COMPRESS=OFF\r\n",hpj);
 	    }
 	    else if(PhraseCount)
 	    {
-		fputs("COMPRESS=HIGH\n",hpj);
+		fputs("COMPRESS=HIGH\r\n",hpj);
 	    }
 	    else
 	    {
-		fputs("COMPRESS=MEDIUM\n",hpj);
+		fputs("COMPRESS=MEDIUM\r\n",hpj);
 	    }
-	    if(SysHdr.Flags==8) fputs("CDROMOPT=TRUE\n",hpj);
+	    if(SysHdr.Flags==8) fputs("CDROMOPT=TRUE\r\n",hpj);
 	    for(i='A';i<='z';i++) if(lists[i-'0']&&i!='K'&&(i!='A'||!win95))
 	    {
-		fprintf(hpj,"MULTIKEY=%c\n",i);
+		fprintf(hpj,"MULTIKEY=%c\r\n",i);
 	    }
-	    putc('\n',hpj);
+	    fputs("\r\n",hpj);
 	    if(windows)
 	    {
-		fputs("[WINDOWS]\n",hpj);
+		fputs("[WINDOWS]\r\n",hpj);
 		for(SysRec=GetFirstSystemRecord(HelpFile);SysRec;SysRec=GetNextSystemRecord(SysRec))
 		{
 		    if(SysRec->RecordType==0x0006)
@@ -1955,30 +1955,30 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 			}
 		    }
 		}
-		putc('\n',hpj);
+		fputs("\r\n",hpj);
 	    }
 	    if(macro)
 	    {
-		fputs("[CONFIG]\n",hpj);
+		fputs("[CONFIG]\r\n",hpj);
 		for(SysRec=GetFirstSystemRecord(HelpFile);SysRec;SysRec=GetNextSystemRecord(SysRec))
 		{
 		    if(SysRec->RecordType==0x0004)
 		    {
 			if(sscanf(SysRec->Data,"SPC(%d)%n",&color,&n)>0)
 			{
-			    fprintf(hpj,"SPC(%u,%u,%u)%s\n",(unsigned char)(color),(unsigned char)(color>>8),(unsigned char)(color>>16),SysRec->Data+n);
+			    fprintf(hpj,"SPC(%u,%u,%u)%s\r\n",(unsigned char)(color),(unsigned char)(color>>8),(unsigned char)(color>>16),SysRec->Data+n);
 			}
 			else
 			{
-			    fprintf(hpj,"%s\n",SysRec->Data);
+			    fprintf(hpj,"%s\r\n",SysRec->Data);
 			}
 		    }
 		}
-		putc('\n',hpj);
+		fputs("\r\n",hpj);
 	    }
 	    if(fbreak)
 	    {
-		fputs("[FTINDEX]\n",hpj);
+		fputs("[FTINDEX]\r\n",hpj);
 		for(SysRec=GetFirstSystemRecord(HelpFile);SysRec;SysRec=GetNextSystemRecord(SysRec))
 		{
 		    if(SysRec->RecordType==0x000C)
@@ -2018,7 +2018,7 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 							i=getc(HelpFile);
 							my_fread(buffer,i,HelpFile);
 							buffer[i]='\0';
-							fprintf(f,"%s\n",buffer);
+							fprintf(f,"%s\r\n",buffer);
 						    }
 						    my_fclose(f);
 						}
@@ -2029,16 +2029,16 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 				    }
 				}
 			    }
-			    putc('\n',hpj);
+			    fputs("\r\n",hpj);
 			}
 		    }
 		}
-		putc('\n',hpj);
+		fputs("\r\n",hpj);
 	    }
 	    if(groups||multi&&browsenums>1)
 	    {
 		group=my_malloc(groups*sizeof(GROUP));
-		fputs("[GROUPS]\n",hpj);
+		fputs("[GROUPS]\r\n",hpj);
 		i=0;
 		for(SysRec=GetFirstSystemRecord(HelpFile);SysRec;SysRec=GetNextSystemRecord(SysRec))
 		{
@@ -2051,11 +2051,11 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 			SysRec->Data[n]='\0';
 			if(ptr&&strcmp(ptr,"\"\" ")==0)
 			{
-			    fprintf(hpj,"group=%s\n",SysRec->Data);
+			    fprintf(hpj,"group=%s\r\n",SysRec->Data);
 			}
 			else
 			{
-			    fprintf(hpj,"group=%s,%s\n",SysRec->Data,ptr);
+			    fprintf(hpj,"group=%s,%s\r\n",SysRec->Data,ptr);
 			}
 			group[i].Name=my_strdup(SysRec->Data);
 			if(groups)
@@ -2074,7 +2074,7 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 			i++;
 		    }
 		}
-		if(multi) for(i=1;i<browsenums;i++) fprintf(hpj,"group=BROWSE%04x\n",(int)i);
+		if(multi) for(i=1;i<browsenums;i++) fprintf(hpj,"group=BROWSE%04x\r\n",(int)i);
 		if(SearchFile(HelpFile,"|GMACROS",&FileLength))
 		{
 		    LONG len, pos, off;
@@ -2091,21 +2091,21 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 			{
 			    my_fread(buffer,off-8,HelpFile);
 			    buffer[off-8]='\0';
-			    fprintf(hpj,"entry=%s\n",buffer);
+			    fprintf(hpj,"entry=%s\r\n",buffer);
 			}
 			if(len>off)
 			{
 			    my_fread(buffer,len-off,HelpFile);
 			    buffer[len-off]='\0';
-			    fprintf(hpj,"exit=%s\n",buffer);
+			    fprintf(hpj,"exit=%s\r\n",buffer);
 			}
 		    }
 		}
-		putc('\n',hpj);
+		fputs("\r\n",hpj);
 	    }
 	    if(dllmaps)
 	    {
-		fputs("[DLLMAPS]\n",hpj);
+		fputs("[DLLMAPS]\r\n",hpj);
 		for(SysRec=GetFirstSystemRecord(HelpFile);SysRec;SysRec=GetNextSystemRecord(SysRec))
 		{
 		    if(SysRec->RecordType==0x0013)
@@ -2119,37 +2119,37 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 			    ptr=ptr+strlen(ptr)+1;
 			    fprintf(hpj,"%s,",ptr);
 			    ptr=ptr+strlen(ptr)+1;
-			    fprintf(hpj,"%s\n",ptr);
+			    fprintf(hpj,"%s\r\n",ptr);
 			}
 		    }
 		}
-		putc('\n',hpj);
+		fputs("\r\n",hpj);
 	    }
 	    if(keywords)
 	    {
-		fputs("[KEYINDEX]\n",hpj);
+		fputs("[KEYINDEX]\r\n",hpj);
 		for(SysRec=GetFirstSystemRecord(HelpFile);SysRec;SysRec=GetNextSystemRecord(SysRec))
 		{
 		    if(SysRec->RecordType==0x000E)
 		    {
-			fprintf(hpj,"keyword=%c,\"%s\"\n",SysRec->Data[1],SysRec->Data+30);
+			fprintf(hpj,"keyword=%c,\"%s\"\r\n",SysRec->Data[1],SysRec->Data+30);
 		    }
 		}
-		putc('\n',hpj);
+		fputs("\r\n",hpj);
 	    }
 	    for(i=0;i<windows;i++)
 	    {
 		sprintf(name,"|CF%d",(int)i);
 		if(SearchFile(HelpFile,name,&FileLength))
 		{
-		    fprintf(hpj,"[CONFIG:%d]\n",i);
+		    fprintf(hpj,"[CONFIG:%d]\r\n",i);
 		    /* may use [CONFIG-GetWindowName] instead, but WindowName need not be defined */
 		    for(n=0;n<FileLength;n+=strlen(buffer)+1)
 		    {
 			my_gets(buffer,sizeof(buffer),HelpFile);
-			fprintf(hpj,"%s\n",buffer);
+			fprintf(hpj,"%s\r\n",buffer);
 		    }
-		    putc('\n',hpj);
+		    fputs("\r\n",hpj);
 		}
 	    }
 	}
@@ -2295,7 +2295,7 @@ void PhraseList(char *FileName)
 	    for(n=0;n<PhraseCount;n++)
 	    {
 		PrintPhrase(n,NULL,f);
-		putc('\n',f);
+		fputs("\r\n",f);
 	    }
 	    my_fclose(f);
 	}
@@ -2383,17 +2383,17 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 		    {
 			if(!charmap)
 			{
-			    fputs("[CHARMAP]\n",hpj);
+			    fputs("[CHARMAP]\r\n",hpj);
 			    charmap=TRUE;
 			}
 			*p++='\0';
 			if(strcmp(p,"0")==0)
 			{
-			    fprintf(hpj,"DEFAULT=%s\n",CharMap);
+			    fprintf(hpj,"DEFAULT=%s\r\n",CharMap);
 			}
 			else
 			{
-			    fprintf(hpj,"%s=%s\n",FontName,CharMap);
+			    fprintf(hpj,"%s=%s\r\n",FontName,CharMap);
 			}
 			break;
 		    }
@@ -2401,7 +2401,7 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 	    }
 	    fontname[i]=my_strdup(FontName);
 	}
-	if(charmap) putc('\n',hpj);
+	if(charmap) fputs("\r\n",hpj);
 	if(hpj&&FontHdr.FacenamesOffset>=16) for(j=0;j<FontHdr.NumCharmaps;j++)
 	{
 	    fseek(HelpFile,FontStart+FontHdr.CharmapsOffset+j*32,SEEK_SET);
@@ -2417,7 +2417,7 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 		    f=my_fopen(CharMap,"wt");
 		    if(f)
 		    {
-			fprintf(f,"%d,\n",CharmapHeader.Entries);
+			fprintf(f,"%d,\r\n",CharmapHeader.Entries);
 			for(k=0;k<CharmapHeader.Entries;k++)
 			{
 			    fprintf(f,"%5u,",my_getw(HelpFile));
@@ -2425,17 +2425,17 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 			    fprintf(f,"%3u,",getc(HelpFile));
 			    fprintf(f,"%3u,",getc(HelpFile));
 			    fprintf(f,"%3u,",getc(HelpFile));
-			    fprintf(f,"%3u,\n",getc(HelpFile));
+			    fprintf(f,"%3u,\r\n",getc(HelpFile));
 			    my_getw(HelpFile);
 			}
-			fprintf(f,"%d,\n",CharmapHeader.Ligatures);
+			fprintf(f,"%d,\r\n",CharmapHeader.Ligatures);
 			for(k=0;k<CharmapHeader.Ligatures;k++)
 			{
 			    for(l=0;l<CharmapHeader.LigLen;l++)
 			    {
 				fprintf(f,"%3u,",getc(HelpFile));
 			    }
-			    putc('\n',f);
+			    fputs("\r\n",f);
 			}
 			my_fclose(f);
 		    }
@@ -2570,21 +2570,21 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 		}
 	    }
 	}
-	fprintf(rtf,"{\\rtf1\\ansi\\deff%d\n{\\fonttbl",DefFont);
+	fprintf(rtf,"{\\rtf1\\ansi\\deff%d\r\n{\\fonttbl",DefFont);
 	for(i=0;i<fontnames;i++)
 	{
 	    fprintf(rtf,"{\\f%d\\f%s %s;}",i,FontFamily(family[i]),fontname[i]);
 	    free(fontname[i]);
 	}
 	free(fontname);
-	fputs("}\n",rtf);
+	fputs("}\r\n",rtf);
 	if(colors>1)
 	{
 	    fputs("{\\colortbl;",rtf);
 	    for(i=1;i<colors;i++) fprintf(rtf,"\\red%d\\green%d\\blue%d;",color[i].r,color[i].g,color[i].b);
-	    fputs("}\n",rtf);
+	    fputs("}\r\n",rtf);
 	}
-	fprintf(rtf,"{\\stylesheet{\\fs%d \\snext0 Normal;}\n",font[0].HalfPoints);
+	fprintf(rtf,"{\\stylesheet{\\fs%d \\snext0 Normal;}\r\n",font[0].HalfPoints);
 	if(mvbstyle)
 	{
 	    for(i=0;i<FontHdr.NumFormats;i++)
@@ -2626,7 +2626,7 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 		    if(m->font.FGRGB[0]) fprintf(rtf,"\\cf%d",m->font.FGRGB[0]);
 		    if(m->font.BGRGB[0]) fprintf(rtf,"\\cb%d",m->font.BGRGB[0]);
 		}
-		fprintf(rtf," %s;}\n",m->StyleName);
+		fprintf(rtf," %s;}\r\n",m->StyleName);
 	    }
 	    free(mvbstyle);
 	}
@@ -2666,12 +2666,12 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 		    if(m->font.FGRGB[0]) fprintf(rtf,"\\cf%d",m->font.FGRGB[0]);
 		    if(m->font.BGRGB[0]) fprintf(rtf,"\\cb%d",m->font.BGRGB[0]);
 		}
-		fprintf(rtf," %s;}\n",m->StyleName);
+		fprintf(rtf," %s;}\r\n",m->StyleName);
 	    }
 	    free(newstyle);
 	}
 	if(family) free(family);
-	fputs("}\\pard\\plain\n",rtf);
+	fputs("}\\pard\\plain\r\n",rtf);
 	memset(&CurrentFont,0,sizeof(CurrentFont));
 	CurrentFont.FontName=DefFont;
 	if(hpj)
@@ -2855,7 +2855,7 @@ void Annotate(LONG pos,FILE *rtf)
 	{
 	    if(i==0x0D)
 	    {
-		fputs("\\par\n",rtf);
+		fputs("\\par\r\n",rtf);
 	    }
 	    else if(i!='{'&&i!='}'&&i!='\\'&&isprint(i))
 	    {
@@ -2986,7 +2986,7 @@ void ListKeywords(FILE *HelpFile,FILE *rtf,LONG TopicOffset)
     {
 	if(len>0&&(KeywordRec[NextKeywordRec].Footnote!=footnote||KeywordRec[NextKeywordRec].KeyIndex!=keyindex||len+strlen(KeywordRec[NextKeywordRec].Keyword)>(after31?1023:254)))
 	{
-	    fputs("}\n",rtf);
+	    fputs("}\r\n",rtf);
 	    len=0;
 	}
 	if(len>0)
@@ -3007,7 +3007,7 @@ void ListKeywords(FILE *HelpFile,FILE *rtf,LONG TopicOffset)
 	keyindex=KeywordRec[NextKeywordRec].KeyIndex;
 	NextKeywordRec++;
     }
-    if(len) fputs("}\n",rtf);
+    if(len) fputs("}\r\n",rtf);
 }
 
 /* create > footnote if topic at TopicOffset has a window assigned to
@@ -3434,11 +3434,11 @@ void ListGroups(FILE *rtf,LONG TopicNum,unsigned LONG BrowseNum)
     }
     if(grouplisted)
     {
-	fputs("}\n",rtf);
+	fputs("}\r\n",rtf);
     }
     else if(BrowseNum)
     {
-	fprintf(rtf,"{\\up +}{\\footnote\\pard\\plain{\\up +} BROWSE%04x:%04x}\n",(unsigned short)BrowseNum,(unsigned short)(BrowseNum>>16));
+	fprintf(rtf,"{\\up +}{\\footnote\\pard\\plain{\\up +} BROWSE%04x:%04x}\r\n",(unsigned short)BrowseNum,(unsigned short)(BrowseNum>>16));
     }
 }
 
@@ -3530,7 +3530,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 		    putc('}',rtf);
 		    my_fclose(rtf);
 		    BuildName(buffer,++NumberOfRTF);
-		    if(hpj) fprintf(hpj,"%s\n",buffer);
+		    if(hpj) fprintf(hpj,"%s\r\n",buffer);
 		    rtf=my_fopen(buffer,"wt");
 		    FontLoad(HelpFile,rtf,NULL);
 		    TopicInRTF=0;
@@ -3539,11 +3539,11 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 		{
 		     if(makertf&&nopagebreak)
 		     {
-			 fputs("\\par\n",rtf);
+			 fputs("\\par\r\n",rtf);
 		     }
 		     else
 		     {
-			 fputs("\\page\n",rtf);
+			 fputs("\\page\r\n",rtf);
 		     }
 		}
 		firsttopic=FALSE;
@@ -3554,7 +3554,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 		    if(before31)
 		    {
 			TopicHdr30=(TOPICHEADER30 *)LinkData1;
-			fprintf(rtf,"{\\up #}{\\footnote\\pard\\plain{\\up #} TOPIC%d}\n",TopicNum);
+			fprintf(rtf,"{\\up #}{\\footnote\\pard\\plain{\\up #} TOPIC%d}\r\n",TopicNum);
 			if(resolvebrowse)
 			{
 			    if(TopicHdr30->NextTopicNum>TopicNum&&TopicHdr30->PrevTopicNum>TopicNum
@@ -3619,7 +3619,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 			{
 			    fputs("{\\up $}{\\footnote\\pard\\plain{\\up $} ",rtf);
 			    putrtf(rtf,LinkData2);
-			    fputs("}\n",rtf);
+			    fputs("}\r\n",rtf);
 			}
 			for(i=strlen(LinkData2)+1;i<TopicLink.DataLen2;i+=strlen(LinkData2+i)+1)
 			{
@@ -3629,14 +3629,14 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 				printf("Help compiler will issue Warning 3511: Macro '%s' exceeds limit of 254 characters\n",LinkData2+i);
 			    }
 			    putrtf(rtf,LinkData2+i);
-			    fputs("}\n",rtf);
+			    fputs("}\r\n",rtf);
 			}
 		    }
 		    while(NextContextRec<ContextRecs&&ContextRec[NextContextRec].TopicOffset<=TopicOffset)
 		    {
 			fputs("{\\up #}{\\footnote\\pard\\plain{\\up #} ",rtf);
                         putrtf(rtf,unhash(ContextRec[NextContextRec].HashValue));
-                        fputs("}\n",rtf);
+                        fputs("}\r\n",rtf);
 			if(!mvp) while(NextContextRec+1<ContextRecs&&ContextRec[NextContextRec].TopicOffset==ContextRec[NextContextRec+1].TopicOffset)
 			{
 			    NextContextRec++;
@@ -3644,7 +3644,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 			NextContextRec++;
 		    }
 		    i=ListWindows(HelpFile,TopicOffset);
-		    if(i!=-1) fprintf(rtf,"{\\up >}{\\footnote\\pard\\plain{\\up >} %s}\n",GetWindowName(i));
+		    if(i!=-1) fprintf(rtf,"{\\up >}{\\footnote\\pard\\plain{\\up >} %s}\r\n",GetWindowName(i));
 		}
 		TopicNum++;
 	    }
@@ -3766,7 +3766,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 				{
 				    fputs("{\\up #}{\\footnote\\pard\\plain{\\up #} ",rtf);
                                     putrtf(rtf,unhash(ContextRec[NextContextRec].HashValue));
-                                    fputs("}\n",rtf);
+                                    fputs("}\r\n",rtf);
 				    if(!mvp) while(NextContextRec+1<ContextRecs&&ContextRec[NextContextRec].TopicOffset==ContextRec[NextContextRec+1].TopicOffset)
 				    {
 					NextContextRec++;
@@ -3831,7 +3831,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 			    ptr+=3;
 			    break;
 			case 0x81:
-			    fputs("\\line\n",rtf);
+			    fputs("\\line\r\n",rtf);
 			    ptr++;
 			    break;
 			case 0x82:
@@ -3839,11 +3839,11 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 			    {
 				if((unsigned char)ptr[1]!=0xFF)
 				{
-				    fputs("\n\\par\\intbl ",rtf);
+				    fputs("\r\n\\par\\intbl ",rtf);
 				}
 				else if(*(short *)(ptr+2)==-1)
 				{
-				    fputs("\\cell\\intbl\\row\n",rtf);
+				    fputs("\\cell\\intbl\\row\r\n",rtf);
 				}
 				else if(*(short *)(ptr+2)==lastcol)
 				{
@@ -3856,7 +3856,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 			    }
 			    else
 			    {
-				fputs("\n\\par ",rtf);
+				fputs("\r\n\\par ",rtf);
 			    }
 			    ptr++;
 			    break;
@@ -3911,10 +3911,10 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 					    fprintf(rtf,"{\\field {\\*\\fldinst import %s}}",getbitmapname(x2));
 					    break;
 					case 0x87:
-					    fprintf(rtf,"{\\pvpara {\\field {\\*\\fldinst import %s}}\\par}\n",getbitmapname(x2));
+					    fprintf(rtf,"{\\pvpara {\\field {\\*\\fldinst import %s}}\\par}\r\n",getbitmapname(x2));
 					    break;
 					case 0x88:
-					    fprintf(rtf,"{\\pvpara\\posxr{\\field {\\*\\fldinst import %s}}\\par}\n",getbitmapname(x2));
+					    fprintf(rtf,"{\\pvpara\\posxr{\\field {\\*\\fldinst import %s}}\\par}\r\n",getbitmapname(x2));
 					    break;
 					}
 				    }
@@ -3952,7 +3952,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 				    if(!plus) fputs(" EXTERNAL",rtf);
 				    if(c1&8) fputs(" NOMENU",rtf);
 				    if(c1&2) fputs(" NOPLAYBAR",rtf);
-				    fprintf(rtf,",%s\\}\n",plus?plus+1:ptr+7+n);
+				    fprintf(rtf,",%s\\}\r\n",plus?plus+1:ptr+7+n);
 				}
 				else
 				{
@@ -4159,8 +4159,8 @@ void GenerateContent(FILE *HelpFile,FILE *ContentFile) /* create a simple Win95 
     BUFFER buf;
     char *ptr;
 
-    fprintf(ContentFile,":Base %s%s>main\n",name,ext);
-    if(HelpFileTitle[0]) fprintf(ContentFile,":Title %s\n",HelpFileTitle);
+    fprintf(ContentFile,":Base %s%s>main\r\n",name,ext);
+    if(HelpFileTitle[0]) fprintf(ContentFile,":Title %s\r\n",HelpFileTitle);
     WindowRecs=0;
     if(SearchFile(HelpFile,"|VIOLA",NULL))
     {
@@ -4197,7 +4197,7 @@ void GenerateContent(FILE *HelpFile,FILE *ContentFile) /* create a simple Win95 
 				break;
 			    }
 			}
-			putc('\n',ContentFile);
+			fputs("\r\n",ContentFile);
 		    }
 		}
 	    }
@@ -4223,7 +4223,7 @@ void ListRose(FILE *HelpFile,FILE *hpj)
 	    my_fread(keytopic,FileLength,HelpFile);
 	    if(SearchFile(HelpFile,"|KWBTREE",NULL))
 	    {
-		fputs("[MACROS]\n",hpj);
+		fputs("[MACROS]\r\n",hpj);
 		for(n=GetFirstPage(HelpFile,&buf,NULL);n;n=GetNextPage(HelpFile,&buf))
 		{
 		    for(i=0;i<n;i++)
@@ -4249,9 +4249,9 @@ void ListRose(FILE *HelpFile,FILE *hpj)
 					my_gets(buffer,sizeof(buffer),HelpFile);
 					if(h==hash)
 					{
-					    fprintf(hpj,"%s\n%s\n",keyword,buffer);
+					    fprintf(hpj,"%s\r\n%s\r\n",keyword,buffer);
 					    my_gets(buffer,sizeof(buffer),HelpFile);
-					    fprintf(hpj,"%s\n",buffer);
+					    fprintf(hpj,"%s\r\n",buffer);
 					}
 					else
 					{
@@ -4265,7 +4265,7 @@ void ListRose(FILE *HelpFile,FILE *hpj)
 			}
 		    }
 		}
-		putc('\n',hpj);
+		fputs("\r\n",hpj);
 	    }
 	    free(keytopic);
 	}
@@ -4989,14 +4989,14 @@ void AliasList(FILE *hpj) /* write [ALIAS] section to HPJ file */
 	    if(!headerwritten)
 	    {
 		fputs("Creating [ALIAS] section...\n",stderr);
-		fputs("[ALIAS]\n",hpj);
+		fputs("[ALIAS]\r\n",hpj);
 		headerwritten=TRUE;
 	    }
 	    fprintf(hpj,"%s=",unhash(ContextRec[n].HashValue));
-	    fprintf(hpj,"%s\n",unhash(ContextRec[i].HashValue));
+	    fprintf(hpj,"%s\r\n",unhash(ContextRec[i].HashValue));
 	}
     }
-    if(headerwritten) putc('\n',hpj);
+    if(headerwritten) fputs("\r\n",hpj);
 }
 
 void CTXOMAPList(FILE *HelpFile,FILE *hpj) /* write [MAP] section to HPJ file */
@@ -5011,21 +5011,21 @@ void CTXOMAPList(FILE *HelpFile,FILE *hpj) /* write [MAP] section to HPJ file */
 	if(n)
 	{
 	    fputs("Creating [MAP] section...\n",stderr);
-	    fputs("[MAP]\n",hpj);
+	    fputs("[MAP]\r\n",hpj);
 	    for(i=0;i<n;i++)
 	    {
 		my_fread(&CTXORec,sizeof(CTXORec),HelpFile);
 		ptr=TopicName(CTXORec.TopicOffset);
 		if(ptr)
 		{
-		    fprintf(hpj,"%s %ld\n",ptr,(long)CTXORec.MapID);
+		    fprintf(hpj,"%s %ld\r\n",ptr,(long)CTXORec.MapID);
 		}
 		else
 		{
-		    fprintf(hpj,"TOPIC%08lx %ld\n",(long)CTXORec.TopicOffset,(long)CTXORec.MapID);
+		    fprintf(hpj,"TOPIC%08lx %ld\r\n",(long)CTXORec.TopicOffset,(long)CTXORec.MapID);
 		}
 	    }
-	    putc('\n',hpj);
+	    fputs("\r\n",hpj);
 	}
     }
 }
@@ -5088,7 +5088,7 @@ void GuessFromKeywords(FILE *HelpFile)
     }
     if(guessed>0)
     {
-	fprintf(stderr,"%ld context ids found\n",(long)guessed);
+	fprintf(stderr,"%ld context ids found\r\n",(long)guessed);
     }
     else
     {
@@ -5622,7 +5622,7 @@ BOOL HelpDeCompile(FILE *HelpFile,char *dumpfile,int mode,char *exportname,LONG 
 		{
 		    FontLoad(HelpFile,rtf,hpj);
 		    fputs("Pass 2...\n",stderr);
-		    fprintf(hpj,"[FILES]\n%s\n\n",filename);
+		    fprintf(hpj,"[FILES]\r\n%s\r\n\r\n",filename);
 		    rtf=TopicDump(HelpFile,rtf,hpj,FALSE);
 		    putc('}',rtf);
 		    putc('\n',stderr);
