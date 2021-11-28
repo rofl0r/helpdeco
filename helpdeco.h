@@ -35,127 +35,127 @@ typedef enum {FALSE,TRUE} BOOL;
 
 typedef struct               /* structure at beginning of help file */
 {
-    LONG Magic;              /* 0x00035F3F */
-    LONG DirectoryStart;     /* offset of FILEHEADER of internal direcory */
-    LONG FreeChainStart;     /* offset of FILEHEADER or -1L */
-    LONG EntireFileSize;     /* size of entire help file in bytes */
+	LONG Magic;              /* 0x00035F3F */
+	LONG DirectoryStart;     /* offset of FILEHEADER of internal direcory */
+	LONG FreeChainStart;     /* offset of FILEHEADER or -1L */
+	LONG EntireFileSize;     /* size of entire help file in bytes */
 }
 HELPHEADER;
 
 typedef struct FILEHEADER    /* structure at FileOffset of each internal file */
 {
-    LONG ReservedSpace;      /* reserved space in help file incl. FILEHEADER */
-    LONG UsedSpace;          /* used space in help file excl. FILEHEADER */
-    unsigned char FileFlags; /* normally 4 */
+	LONG ReservedSpace;      /* reserved space in help file incl. FILEHEADER */
+	LONG UsedSpace;          /* used space in help file excl. FILEHEADER */
+	unsigned char FileFlags; /* normally 4 */
 }
 FILEHEADER;
 
 typedef struct BTREEHEADER   /* structure after FILEHEADER of each Btree */
 {
-    unsigned short Magic;    /* 0x293B */
-    unsigned short Flags;    /* bit 0x0002 always 1, bit 0x0400 1 if direcory */
-    unsigned short PageSize; /* 0x0400=1k if directory, 0x0800=2k else */
-    unsigned char Structure[16]; /* string describing structure of data */
-    short MustBeZero;        /* 0 */
-    short PageSplits;        /* number of page splits Btree has suffered */
-    short RootPage;          /* page number of Btree root page */
-    short MustBeNegOne;      /* 0xFFFF */
-    short TotalPages;        /* number of Btree pages */
-    short NLevels;           /* number of levels of Btree */
-    LONG TotalBtreeEntries;  /* number of entries in Btree */
+	unsigned short Magic;    /* 0x293B */
+	unsigned short Flags;    /* bit 0x0002 always 1, bit 0x0400 1 if direcory */
+	unsigned short PageSize; /* 0x0400=1k if directory, 0x0800=2k else */
+	unsigned char Structure[16]; /* string describing structure of data */
+	short MustBeZero;        /* 0 */
+	short PageSplits;        /* number of page splits Btree has suffered */
+	short RootPage;          /* page number of Btree root page */
+	short MustBeNegOne;      /* 0xFFFF */
+	short TotalPages;        /* number of Btree pages */
+	short NLevels;           /* number of levels of Btree */
+	LONG TotalBtreeEntries;  /* number of entries in Btree */
 }
 BTREEHEADER;
 
 typedef struct BTREEINDEXHEADER /* structure at beginning of every index-page */
 {
-    unsigned short Unknown;  /* sorry, no ID to identify an index-page */
-    short NEntries;          /* number of entries in this index-page */
-    short PreviousPage;      /* page number of previous page */
+	unsigned short Unknown;  /* sorry, no ID to identify an index-page */
+	short NEntries;          /* number of entries in this index-page */
+	short PreviousPage;      /* page number of previous page */
 }
 BTREEINDEXHEADER;
 
 typedef struct BTREENODEHEADER /* structure at beginning of every leaf-page */
 {
-    unsigned short Unknown;  /* Sorry, no ID to identify a leaf-page */
-    short NEntries;          /* number of entires in this leaf-page */
-    short PreviousPage;      /* page number of preceeding leaf-page or -1 */
-    short NextPage;          /* page number of next leaf-page or -1 */
+	unsigned short Unknown;  /* Sorry, no ID to identify a leaf-page */
+	short NEntries;          /* number of entires in this leaf-page */
+	short PreviousPage;      /* page number of preceeding leaf-page or -1 */
+	short NextPage;          /* page number of next leaf-page or -1 */
 }
 BTREENODEHEADER;
 
 typedef struct SYSTEMHEADER  /* structure at beginning of |SYSTEM file */
 {
-    uint16_t Magic;    /* 0x036C */
-    uint16_t Minor;    /* help file format version number */
-    uint16_t Major;    /* 1 */
-    uint32_t GenDate;          /* date/time the help file was generated or 0 */
-    uint16_t Flags;    /* tells you how the help file is compressed */
+	uint16_t Magic;    /* 0x036C */
+	uint16_t Minor;    /* help file format version number */
+	uint16_t Major;    /* 1 */
+	uint32_t GenDate;          /* date/time the help file was generated or 0 */
+	uint16_t Flags;    /* tells you how the help file is compressed */
 }
 SYSTEMHEADER;
 
 typedef struct               /* internal structure */
 {
-    FILE *File;
-    LONG SavePos;
-    LONG Remaining;
-    unsigned short RecordType; /* type of data in record */
-    unsigned short DataSize;   /* size of data */
-    char Data[10];
+	FILE *File;
+	LONG SavePos;
+	LONG Remaining;
+	unsigned short RecordType; /* type of data in record */
+	unsigned short DataSize;   /* size of data */
+	char Data[10];
 }
 SYSTEMRECORD;
 
 typedef struct SECWINDOW     /* structure of data following RecordType 6 */
 {
-    unsigned short Flags;    /* flags (see below) */
-    char Type[10];           /* type of window */
-    char Name[9];            /* window name */
-    char Caption[51];        /* caption for window */
-    short X;                 /* x coordinate of window (0..1000) */
-    short Y;                 /* y coordinate of window (0..1000) */
-    short Width;             /* width of window (0..1000) */
-    short Height;            /* height of window (0..1000) */
-    short Maximize;          /* maximize flag and window styles */
-    unsigned char Rgb[3];    /* color of scrollable region */
-    unsigned char Unknown1;
-    unsigned char RgbNsr[3]; /* color of non-scrollable region */
-    unsigned char Unknown2;
+	unsigned short Flags;    /* flags (see below) */
+	char Type[10];           /* type of window */
+	char Name[9];            /* window name */
+	char Caption[51];        /* caption for window */
+	short X;                 /* x coordinate of window (0..1000) */
+	short Y;                 /* y coordinate of window (0..1000) */
+	short Width;             /* width of window (0..1000) */
+	short Height;            /* height of window (0..1000) */
+	short Maximize;          /* maximize flag and window styles */
+	unsigned char Rgb[3];    /* color of scrollable region */
+	unsigned char Unknown1;
+	unsigned char RgbNsr[3]; /* color of non-scrollable region */
+	unsigned char Unknown2;
 }
 SECWINDOW;
 
 typedef struct
 {
-    unsigned short Flags;    /* flags (see below) */
-    char Type[10];           /* type of window */
-    char Name[9];            /* window name */
-    char Caption[51];        /* caption for window */
-    unsigned char MoreFlags;
-    short X;                 /* x coordinate of window (0..1000) */
-    short Y;                 /* y coordinate of window (0..1000) */
-    short Width;             /* width of window (0..1000) */
-    short Height;            /* height of window (0..1000) */
-    short Maximize;          /* maximize flag and window styles */
-    unsigned char TopRgb[3];
-    unsigned char Unknown0;
-    unsigned char Unknown[25];
-    unsigned char Rgb[3];    /* color of scrollable region */
-    unsigned char Unknown1;
-    unsigned char RgbNsr[3]; /* color of non-scrollable region */
-    unsigned char Unknown2;
-    short X2;
-    short Y2;
-    short Width2;
-    short Height2;
-    short X3;
-    short Y3;
+	unsigned short Flags;    /* flags (see below) */
+	char Type[10];           /* type of window */
+	char Name[9];            /* window name */
+	char Caption[51];        /* caption for window */
+	unsigned char MoreFlags;
+	short X;                 /* x coordinate of window (0..1000) */
+	short Y;                 /* y coordinate of window (0..1000) */
+	short Width;             /* width of window (0..1000) */
+	short Height;            /* height of window (0..1000) */
+	short Maximize;          /* maximize flag and window styles */
+	unsigned char TopRgb[3];
+	unsigned char Unknown0;
+	unsigned char Unknown[25];
+	unsigned char Rgb[3];    /* color of scrollable region */
+	unsigned char Unknown1;
+	unsigned char RgbNsr[3]; /* color of non-scrollable region */
+	unsigned char Unknown2;
+	short X2;
+	short Y2;
+	short Width2;
+	short Height2;
+	short X3;
+	short Y3;
 }
 MVBWINDOW;
 
 typedef struct               /* structure of data following RecordType 14 */
 {
-    char btreename[10];
-    char mapname[10];
-    char dataname[10];
-    char title[80];
+	char btreename[10];
+	char mapname[10];
+	char dataname[10];
+	char title[80];
 }
 KEYINDEX;
 
@@ -174,143 +174,143 @@ KEYINDEX;
 
 typedef struct PHRINDEXHDR   /* structure of beginning of |PhrIndex file */
 {
-    LONG always4A01;              /* sometimes 0x0001 */
-    LONG entries;                 /* number of phrases */
-    LONG compressedsize;          /* size of PhrIndex file */
-    LONG phrimagesize;            /* size of decompressed PhrImage file */
-    LONG phrimagecompressedsize;  /* size of PhrImage file */
-    LONG always0;
-    unsigned short bits:4;
-    unsigned short unknown:12;
-    unsigned short always4A00;    /* sometimes 0x4A01, 0x4A02 */
+	LONG always4A01;              /* sometimes 0x0001 */
+	LONG entries;                 /* number of phrases */
+	LONG compressedsize;          /* size of PhrIndex file */
+	LONG phrimagesize;            /* size of decompressed PhrImage file */
+	LONG phrimagecompressedsize;  /* size of PhrImage file */
+	LONG always0;
+	unsigned short bits:4;
+	unsigned short unknown:12;
+	unsigned short always4A00;    /* sometimes 0x4A01, 0x4A02 */
 }
 PHRINDEXHDR;
 
 typedef struct FONTHEADER    /* structure of beginning of |FONT file */
 {
-    unsigned short NumFacenames;       /* number of face names */
-    unsigned short NumDescriptors;     /* number of font descriptors */
-    unsigned short FacenamesOffset;    /* offset of face name array */
-    unsigned short DescriptorsOffset;  /* offset of descriptors array */
-    unsigned short NumFormats;         /* only if FacenamesOffset >= 12 */
-    unsigned short FormatsOffset;      /* offset of formats array */
-    unsigned short NumCharmaps;        /* only if FacenamesOffset >= 16 */
-    unsigned short CharmapsOffset;     /* offset of charmapnames array */
+	unsigned short NumFacenames;       /* number of face names */
+	unsigned short NumDescriptors;     /* number of font descriptors */
+	unsigned short FacenamesOffset;    /* offset of face name array */
+	unsigned short DescriptorsOffset;  /* offset of descriptors array */
+	unsigned short NumFormats;         /* only if FacenamesOffset >= 12 */
+	unsigned short FormatsOffset;      /* offset of formats array */
+	unsigned short NumCharmaps;        /* only if FacenamesOffset >= 16 */
+	unsigned short CharmapsOffset;     /* offset of charmapnames array */
 }
 FONTHEADER;
 
 typedef struct FONTDESCRIPTOR /* internal font descriptor */
 {
-    unsigned char Bold;
-    unsigned char Italic;
-    unsigned char Underline;
-    unsigned char StrikeOut;
-    unsigned char DoubleUnderline;
-    unsigned char SmallCaps;
-    unsigned char HalfPoints;
-    unsigned char FontFamily;
-    unsigned short FontName;
-    unsigned char textcolor;
-    unsigned char backcolor;
-    unsigned short style;
-    short expndtw;
-    signed char up;
+	unsigned char Bold;
+	unsigned char Italic;
+	unsigned char Underline;
+	unsigned char StrikeOut;
+	unsigned char DoubleUnderline;
+	unsigned char SmallCaps;
+	unsigned char HalfPoints;
+	unsigned char FontFamily;
+	unsigned short FontName;
+	unsigned char textcolor;
+	unsigned char backcolor;
+	unsigned short style;
+	short expndtw;
+	signed char up;
 }
 FONTDESCRIPTOR;
 
 typedef struct                /* non-Multimedia font descriptor */
 {
-    unsigned char Attributes; /* Font Attributes See values below */
-    unsigned char HalfPoints; /* PointSize * 2 */
-    unsigned char FontFamily; /* Font Family. See values below */
-    unsigned short FontName;  /* Number of font in Font List */
-    unsigned char FGRGB[3];   /* RGB values of foreground */
-    unsigned char BGRGB[3];   /* unused background RGB Values */
+	unsigned char Attributes; /* Font Attributes See values below */
+	unsigned char HalfPoints; /* PointSize * 2 */
+	unsigned char FontFamily; /* Font Family. See values below */
+	unsigned short FontName;  /* Number of font in Font List */
+	unsigned char FGRGB[3];   /* RGB values of foreground */
+	unsigned char BGRGB[3];   /* unused background RGB Values */
 }
 OLDFONT;
 
 typedef struct NEWFONT        /* structure located at DescriptorsOffset */
 {
-    unsigned char unknown1;
-    short FontName;
-    unsigned char FGRGB[3];
-    unsigned char BGRGB[3];
-    unsigned char unknown5;
-    unsigned char unknown6;
-    unsigned char unknown7;
-    unsigned char unknown8;
-    unsigned char unknown9;
-    LONG Height;
-    unsigned char mostlyzero[12];
-    short Weight;
-    unsigned char unknown10;
-    unsigned char unknown11;
-    unsigned char Italic;
-    unsigned char Underline;
-    unsigned char StrikeOut;
-    unsigned char DoubleUnderline;
-    unsigned char SmallCaps;
-    unsigned char unknown17;
-    unsigned char unknown18;
-    unsigned char PitchAndFamily;
+	unsigned char unknown1;
+	short FontName;
+	unsigned char FGRGB[3];
+	unsigned char BGRGB[3];
+	unsigned char unknown5;
+	unsigned char unknown6;
+	unsigned char unknown7;
+	unsigned char unknown8;
+	unsigned char unknown9;
+	LONG Height;
+	unsigned char mostlyzero[12];
+	short Weight;
+	unsigned char unknown10;
+	unsigned char unknown11;
+	unsigned char Italic;
+	unsigned char Underline;
+	unsigned char StrikeOut;
+	unsigned char DoubleUnderline;
+	unsigned char SmallCaps;
+	unsigned char unknown17;
+	unsigned char unknown18;
+	unsigned char PitchAndFamily;
 }
 NEWFONT;
 
 typedef struct
 {
-    unsigned short StyleNum;
-    unsigned short BasedOn;
-    NEWFONT font;
-    char unknown[35];
-    char StyleName[65];
+	unsigned short StyleNum;
+	unsigned short BasedOn;
+	NEWFONT font;
+	char unknown[35];
+	char StyleName[65];
 }
 NEWSTYLE;
 
 typedef struct MVBFONT        /* structure located at DescriptorsOffset */
 {
-    short FontName;
-    short expndtw;
-    unsigned short style;
-    unsigned char FGRGB[3];
-    unsigned char BGRGB[3];
-    LONG Height;
-    unsigned char mostlyzero[12];
-    short Weight;
-    unsigned char unknown10;
-    unsigned char unknown11;
-    unsigned char Italic;
-    unsigned char Underline;
-    unsigned char StrikeOut;
-    unsigned char DoubleUnderline;
-    unsigned char SmallCaps;
-    unsigned char unknown17;
-    unsigned char unknown18;
-    unsigned char PitchAndFamily;
-    unsigned char unknown20;
-    signed char up;
+	short FontName;
+	short expndtw;
+	unsigned short style;
+	unsigned char FGRGB[3];
+	unsigned char BGRGB[3];
+	LONG Height;
+	unsigned char mostlyzero[12];
+	short Weight;
+	unsigned char unknown10;
+	unsigned char unknown11;
+	unsigned char Italic;
+	unsigned char Underline;
+	unsigned char StrikeOut;
+	unsigned char DoubleUnderline;
+	unsigned char SmallCaps;
+	unsigned char unknown17;
+	unsigned char unknown18;
+	unsigned char PitchAndFamily;
+	unsigned char unknown20;
+	signed char up;
 }
 MVBFONT;
 
 typedef struct
 {
-    unsigned short StyleNum;
-    unsigned short BasedOn;
-    MVBFONT font;
-    char unknown[35];
-    char StyleName[65];
+	unsigned short StyleNum;
+	unsigned short BasedOn;
+	MVBFONT font;
+	char unknown[35];
+	char StyleName[65];
 }
 MVBSTYLE;
 
 typedef struct
 {
-    unsigned short Magic;     /* 0x5555 */
-    unsigned short Size;
-    unsigned short Unknown1;
-    unsigned short Unknown2;
-    unsigned short Entries;
-    unsigned short Ligatures;
-    unsigned short LigLen;
-    unsigned short Unknown[13];
+	unsigned short Magic;     /* 0x5555 */
+	unsigned short Size;
+	unsigned short Unknown1;
+	unsigned short Unknown2;
+	unsigned short Entries;
+	unsigned short Ligatures;
+	unsigned short LigLen;
+	unsigned short Unknown[13];
 }
 CHARMAPHEADER;
 /* Font Attributes */
@@ -332,8 +332,8 @@ CHARMAPHEADER;
 
 typedef struct KWMAPREC       /* structure of |xWMAP leaf-page entries */
 {
-    LONG FirstRec;            /* index number of first keyword on leaf page */
-    unsigned short PageNum;   /* page number that keywords are associated with */
+	LONG FirstRec;            /* index number of first keyword on leaf page */
+	unsigned short PageNum;   /* page number that keywords are associated with */
 }
 KWMAPREC;
 
@@ -343,27 +343,27 @@ typedef LONG TOPICOFFSET;     /* TOPICOFFSET/0x8000 = block number, TOPICOFFSET/
 
 typedef struct                /* structure every TopicBlockSize in |TOPIC */
 {
-    TOPICPOS LastTopicLink;   /* points to last TOPICLINK in previous block */
-    TOPICPOS FirstTopicLink;  /* points to first TOPICLINK in this block */
-    TOPICPOS LastTopicHeader; /* points to TOPICLINK of last TOPICHEADER */
+	TOPICPOS LastTopicLink;   /* points to last TOPICLINK in previous block */
+	TOPICPOS FirstTopicLink;  /* points to first TOPICLINK in this block */
+	TOPICPOS LastTopicHeader; /* points to TOPICLINK of last TOPICHEADER */
 }
 TOPICBLOCKHEADER;
 
 typedef struct                /* structure pointed to by FirstTopicLink */
 {
-    LONG BlockSize;           /* size of this link + LinkData1 + LinkData2 */
-    LONG DataLen2;            /* length of decompressed LinkData2 */
-    TOPICPOS PrevBlock;
-    /* Windows 3.0 (HC30): number of bytes the TOPICLINK of the previous
-    // block is located before this TOPICLINK, that is the block size of
-    // the previous TOPICLINK plus eventually skipped TOPICBLOCKHEADER.
-    // Windows 3.1 (HC31): TOPICPOS of previous TOPICLINK */
-    TOPICPOS NextBlock;
-    /* Windows 3.0 (HC30): number of bytes the TOPICLINK of the next block
-    // is located behind this block, including skipped TOPICBLOCKHEADER.
-    // Windows 3.1 (HC31): TOPICPOS of next TOPICLINK */
-    LONG DataLen1;            /* includes size of TOPICLINK */
-    unsigned char RecordType; /* See below */
+	LONG BlockSize;           /* size of this link + LinkData1 + LinkData2 */
+	LONG DataLen2;            /* length of decompressed LinkData2 */
+	TOPICPOS PrevBlock;
+	/* Windows 3.0 (HC30): number of bytes the TOPICLINK of the previous
+	// block is located before this TOPICLINK, that is the block size of
+	// the previous TOPICLINK plus eventually skipped TOPICBLOCKHEADER.
+	// Windows 3.1 (HC31): TOPICPOS of previous TOPICLINK */
+	TOPICPOS NextBlock;
+	/* Windows 3.0 (HC30): number of bytes the TOPICLINK of the next block
+	// is located behind this block, including skipped TOPICBLOCKHEADER.
+	// Windows 3.1 (HC31): TOPICPOS of next TOPICLINK */
+	LONG DataLen1;            /* includes size of TOPICLINK */
+	unsigned char RecordType; /* See below */
 }
 TOPICLINK;
 /* Known RecordTypes for TOPICLINK */
@@ -374,228 +374,228 @@ TOPICLINK;
 
 typedef struct                /* structure of LinkData1 of RecordType 2 */
 {
-    LONG BlockSize;        /* size of topic, including internal topic links */
-    TOPICOFFSET BrowseBck; /* topic offset for prev topic in browse sequence */
-    TOPICOFFSET BrowseFor; /* topic offset for next topic in browse sequence */
-    LONG TopicNum;         /* topic Number */
-    TOPICPOS NonScroll;    /* start of non-scrolling region (topic offset) or -1 */
-    TOPICPOS Scroll;       /* start of scrolling region (topic offset) */
-    TOPICPOS NextTopic;    /* start of next type 2 record */
+	LONG BlockSize;        /* size of topic, including internal topic links */
+	TOPICOFFSET BrowseBck; /* topic offset for prev topic in browse sequence */
+	TOPICOFFSET BrowseFor; /* topic offset for next topic in browse sequence */
+	LONG TopicNum;         /* topic Number */
+	TOPICPOS NonScroll;    /* start of non-scrolling region (topic offset) or -1 */
+	TOPICPOS Scroll;       /* start of scrolling region (topic offset) */
+	TOPICPOS NextTopic;    /* start of next type 2 record */
 }
 TOPICHEADER;
 
 typedef struct                /* structure of LinkData1 of RecordType 2 */
 {
-    LONG BlockSize;
-    short PrevTopicNum;
-    short unused1;
-    short NextTopicNum;
-    short unused2;
+	LONG BlockSize;
+	short PrevTopicNum;
+	short unused1;
+	short NextTopicNum;
+	short unused2;
 }
 TOPICHEADER30;
 
 typedef struct                /* structure of |CTXOMAP file entries */
 {
-    LONG MapID;
-    LONG TopicOffset;
+	LONG MapID;
+	LONG TopicOffset;
 }
 CTXOMAPREC;
 
 typedef struct                /* structure of |CONTEXT leaf-page entry */
 {
-    LONG HashValue;           /* Hash value of context id */
-    TOPICOFFSET TopicOffset;  /* Topic offset */
+	LONG HashValue;           /* Hash value of context id */
+	TOPICOFFSET TopicOffset;  /* Topic offset */
 }
 CONTEXTREC;
 
 typedef struct                /* structure of *.GRP file header */
 {
-    unsigned LONG Magic;      /* 0x000A3333 */
-    unsigned LONG BitmapSize;
-    unsigned LONG LastTopic;
-    unsigned LONG FirstTopic;
-    unsigned LONG TopicsUsed;
-    unsigned LONG TopicCount;
-    unsigned LONG GroupType;
-    unsigned LONG Unknown1;
-    unsigned LONG Unknown2;
-    unsigned LONG Unknown3;
+	unsigned LONG Magic;      /* 0x000A3333 */
+	unsigned LONG BitmapSize;
+	unsigned LONG LastTopic;
+	unsigned LONG FirstTopic;
+	unsigned LONG TopicsUsed;
+	unsigned LONG TopicCount;
+	unsigned LONG GroupType;
+	unsigned LONG Unknown1;
+	unsigned LONG Unknown2;
+	unsigned LONG Unknown3;
 }
 GROUPHEADER;
 
 typedef struct                /* internal use */
 {
-    GROUPHEADER GroupHeader;
-    char *Name;
-    unsigned char *Bitmap;
+	GROUPHEADER GroupHeader;
+	char *Name;
+	unsigned char *Bitmap;
 }
 GROUP;
 
 typedef struct                /* structure of STOPn.STP header */
 {
-    unsigned LONG Magic;      /* 0x00082222 */
-    unsigned short BytesUsed;
-    unsigned short Unused[17];
+	unsigned LONG Magic;      /* 0x00082222 */
+	unsigned short BytesUsed;
+	unsigned short Unused[17];
 }
 STOPHEADER;
 
 typedef struct                /* structure of |VIOLA leaf-page entry */
 {
-    TOPICOFFSET TopicOffset;  /* topic offset */
-    LONG WindowNumber;        /* number of window assigned to topic */
+	TOPICOFFSET TopicOffset;  /* topic offset */
+	LONG WindowNumber;        /* number of window assigned to topic */
 }
 VIOLAREC;
 
 typedef struct                /* structure of |CATALOG header */
 {
-   unsigned short magic;      /* 0x1111 */
-   unsigned short always8;
-   unsigned short always4;
-   LONG entries;
-   unsigned char zero[30];
+	unsigned short magic;      /* 0x1111 */
+	unsigned short always8;
+	unsigned short always4;
+	LONG entries;
+	unsigned char zero[30];
 }
 CATALOGHEADER;
 
 typedef struct                /* structure of Windows Bitmap BMP file */
 {
-    unsigned short bfType;
-    unsigned LONG bfSize;
-    unsigned short bfReserved1;
-    unsigned short bfReserved2;
-    unsigned LONG bfOffBits;
+	unsigned short bfType;
+	unsigned LONG bfSize;
+	unsigned short bfReserved1;
+	unsigned short bfReserved2;
+	unsigned LONG bfOffBits;
 }
 BITMAPFILEHEADER;
 
 typedef struct                /* structure of Windows Bitmap header */
 {
-    unsigned LONG biSize;
-    LONG biWidth;
-    LONG biHeight;
-    unsigned short biPlanes;
-    unsigned short biBitCount;
-    unsigned LONG biCompression;
-    unsigned LONG biSizeImage;
-    LONG biXPelsPerMeter;
-    LONG biYPelsPerMeter;
-    unsigned LONG biClrUsed;
-    unsigned LONG biClrImportant;
+	unsigned LONG biSize;
+	LONG biWidth;
+	LONG biHeight;
+	unsigned short biPlanes;
+	unsigned short biBitCount;
+	unsigned LONG biCompression;
+	unsigned LONG biSizeImage;
+	LONG biXPelsPerMeter;
+	LONG biYPelsPerMeter;
+	unsigned LONG biClrUsed;
+	unsigned LONG biClrImportant;
 }
 BITMAPINFOHEADER;
 
 typedef struct tagRECT        /* Windows rectangle */
 {
-    short left;
-    short top;
-    short right;
-    short bottom;
+	short left;
+	short top;
+	short right;
+	short bottom;
 }
 RECT;
 
 typedef struct                /* Windows Aldus placeable metafile header */
 {
-    unsigned LONG dwKey;
-    unsigned short hMF;
-    RECT rcBBox;
-    unsigned short wInch;
-    unsigned LONG dwReserved;
-    unsigned short wChecksum;
+	unsigned LONG dwKey;
+	unsigned short hMF;
+	RECT rcBBox;
+	unsigned short wInch;
+	unsigned LONG dwReserved;
+	unsigned short wChecksum;
 }
 APMFILEHEADER;
 
 typedef struct                /* structure of hotspot info */
 {
-    unsigned char id0,id1,id2;
-    unsigned short x,y,w,h;
-    unsigned LONG hash;
+	unsigned char id0,id1,id2;
+	unsigned short x,y,w,h;
+	unsigned LONG hash;
 }
 HOTSPOT;
 
 typedef struct                /* structure used as buf of GetFirstPage */
 {
-    LONG FirstLeaf;
-    unsigned short PageSize;
-    short NextPage;
+	LONG FirstLeaf;
+	unsigned short PageSize;
+	short NextPage;
 }
 BUFFER;
 
 typedef struct                /* internal use. 16 bit: max. 3640 */
 {
-    LONG StartTopic;
-    LONG NextTopic;
-    LONG PrevTopic;
-    short BrowseNum;
-    short Start;
-    short Count;
+	LONG StartTopic;
+	LONG NextTopic;
+	LONG PrevTopic;
+	short BrowseNum;
+	short Start;
+	short Count;
 }
 BROWSE;
 
 typedef struct                /* internal use. 16 bit: max. 8191 */
 {
-    LONG StartTopic;
-    short BrowseNum;
-    short Start;
+	LONG StartTopic;
+	short BrowseNum;
+	short Start;
 }
 START;
 
 typedef struct                /* internal use. 16 bit: max. 6553 */
 {
-    char *name;
-    LONG hash;
-    BOOL derived;
+	char *name;
+	LONG hash;
+	BOOL derived;
 }
 HASHREC;
 
 typedef struct                /* internal use to store keyword definitions */
 {
-    BOOL KeyIndex;
-    char Footnote;
-    char *Keyword;
-    LONG TopicOffset;
+	BOOL KeyIndex;
+	char Footnote;
+	char *Keyword;
+	LONG TopicOffset;
 }
 KEYWORDREC;
 
 typedef struct placerec       /* internal use to store external references */
 {
-   struct placerec *next;
-   char topicname[1];
+	struct placerec *next;
+	char topicname[1];
 }
 PLACEREC;
 
 typedef struct checkrec       /* internal use to store external references */
 {
-    struct checkrec *next;
-    enum { TOPIC, CONTEXT } type;
-    LONG hash;
-    char *id;
-    PLACEREC *here;
+	struct checkrec *next;
+	enum { TOPIC, CONTEXT } type;
+	LONG hash;
+	char *id;
+	PLACEREC *here;
 }
 CHECKREC;
 
 typedef struct fileref        /* internal use to store external references */
 {
-    struct fileref *next;
-    CHECKREC *check;
-    char filename[1];
+	struct fileref *next;
+	CHECKREC *check;
+	char filename[1];
 }
 FILEREF;
 
 typedef struct                /* internal use */
 {
-    TOPICOFFSET TopicOffset;
-    TOPICOFFSET OtherTopicOffset;
+	TOPICOFFSET TopicOffset;
+	TOPICOFFSET OtherTopicOffset;
 }
 ALTERNATIVE;
 
 typedef struct mfile          /* a class would be more appropriate */
 {
-    FILE *f;
-    char *ptr;
-    char *end;
-    int (*get)(struct mfile *);
-    int (*put)(struct mfile *,char);
-    size_t (*read)(struct mfile *,void *,long);
-    long (*tell)(struct mfile *);
-    void (*seek)(struct mfile *,long);
+	FILE *f;
+	char *ptr;
+	char *end;
+	int (*get)(struct mfile *);
+	int (*put)(struct mfile *,char);
+	size_t (*read)(struct mfile *,void *,long);
+	long (*tell)(struct mfile *);
+	void (*seek)(struct mfile *,long);
 }
 MFILE;
 
