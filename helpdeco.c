@@ -383,7 +383,7 @@ char index_separators[40]=",;";
 char *extension;
 int extensions=0;
 /* index into bmpext: bit 0=multiresolution bit 1=bitmap, bit 2=metafile, bit 3=hotspot data, bit 4=embedded, bit 5=transparent */
-char *bmpext[]={"???","MRB","BMP","MRB","WMF","MRB","MRB","MRB","SHG","MRB","SHG","MRB","SHG","MRB","SHG","MRB"};
+static const char *bmpext[]={"???","mrb","bmp","mrb","wmf","mrb","mrb","mrb","shg","mrb","shg","mrb","shg","mrb","shg","mrb"};
 char **stopwordfilename;
 int stopwordfiles;
 char **fontname;
@@ -1390,7 +1390,7 @@ int ExtractBitmap(char *szFilename,MFILE *f)
 			if(exportplain||n==1&&(dwHotspotOffset==0L||dwHotspotSize==0L))
 			{
 				if(checkexternal) break;
-				strcat(szFilename,".BMP");
+				strcat(szFilename,".bmp");
 				fTarget=my_fopen(szFilename,"wb");
 				if(fTarget)
 				{
@@ -3345,7 +3345,7 @@ void BuildName(char *buffer,int i)
 		}
 		strcat(buffer,num);
 	}
-	strcat(buffer,".RTF");
+	strcat(buffer,".rtf");
 }
 
 /* emit rtf commands to change to font i.
@@ -5599,22 +5599,22 @@ BOOL HelpDeCompile(FILE *HelpFile,char *dumpfile,int mode,char *exportname,LONG 
 			strcpy(hpjfilename,name);
 			if(mvp)
 			{
-				strcat(hpjfilename,".MVP");
+				strcat(hpjfilename,".mvp");
 			}
 			else
 			{
-				strcat(hpjfilename,".HPJ");
+				strcat(hpjfilename,".hpj");
 			}
 			hpj=my_fopen(hpjfilename,"wt");
 			if(hpj)
 			{
 				strcpy(filename,name);
-				strcat(filename,".ICO");
+				strcat(filename,".ico");
 				SysList(HelpFile,hpj,filename); /* after ContextLoad */
 				ListBaggage(HelpFile,hpj,before31);
 				if(!mvp) AliasList(hpj); /* after ContextLoad, before TopicDump */
 				strcpy(filename,name);
-				strcat(filename,".PH");
+				strcat(filename,".ph");
 				PhraseList(filename); /* after PhraseLoad */
 				BuildName(filename,TopicsPerRTF>0);
 				rtf=my_fopen(filename,"wt");
@@ -5694,7 +5694,7 @@ BOOL HelpDeCompile(FILE *HelpFile,char *dumpfile,int mode,char *exportname,LONG 
 			putc('\n',stderr);
 			if(!before31&&guessing) GuessFromKeywords(HelpFile); /* after FirstPass, before SysList */
 			strcpy(filename,name);
-			strcat(filename,".CNT");
+			strcat(filename,".cnt");
 			rtf=my_fopen(filename,"wt");
 			if(rtf)
 			{
