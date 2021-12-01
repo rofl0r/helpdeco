@@ -3461,29 +3461,29 @@ TOPICOFFSET NextTopicOffset(TOPICOFFSET TopicOffset,TOPICPOS NextBlock,TOPICPOS 
 FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 {
 	TOPICLINK TopicLink;
-	char *LinkData1;  /* Data associated with this link */
+	char *LinkData1 = 0;  /* Data associated with this link */
 	LONG nonscroll=-1L;
-	char *LinkData2;  /* Second set of data */
+	char *LinkData2 = 0;  /* Second set of data */
 	int fontset,i;
 	int NextContextRec;
 	unsigned LONG BrowseNum;
-	char *hotspot;
-	char *arg;
+	char *hotspot = 0;
+	char *arg = 0;
 	BOOL firsttopic=TRUE;
 	BOOL ul,uldb;
 	int nextbitmap,TopicInRTF,NumberOfRTF;
 	LONG TopicNum,TopicOffset,TopicPos;
 	int col,cols,lastcol;
-	short *iptr;
+	short *iptr = 0;
 	unsigned short x1,x2,x3;
 	short y1;
 	LONG l1;
-	char *ptr;
-	char *cmd;
-	char *str;
+	char *ptr = 0;
+	char *cmd = 0;
+	char *str = 0;
 	LONG ActualTopicOffset,MaxTopicOffset;
-	TOPICHEADER30 *TopicHdr30;
-	TOPICHEADER *TopicHdr;
+	TOPICHEADER30 *TopicHdr30 = 0;
+	TOPICHEADER *TopicHdr = 0;
 	LONG BogusTopicOffset;
 
 	if(SearchFile(HelpFile,"|TOPIC",&TopicFileLength))
